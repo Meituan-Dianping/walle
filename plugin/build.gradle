@@ -1,0 +1,13 @@
+apply plugin: 'groovy'
+apply from: file('../gradle_mvn_push.gradle')
+
+dependencies {
+    compile gradleApi()
+    compile localGroovy()
+    compile fileTree(dir: "./src/main/libs", include: ['*.jar'])
+    compile 'commons-io:commons-io:2.4'
+    compile 'commons-codec:commons-codec:1.6'
+    compile 'org.apache.commons:commons-lang3:3.4'
+    compile 'com.android.tools.build:gradle:2.2.0'
+}
+
