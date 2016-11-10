@@ -1,6 +1,6 @@
 ## Walle
 
-Walle(瓦力)：支持Android Signature V2 Scheme签名的的渠道包打包神器
+Walle(瓦力)：支持Android Signature V2 Scheme签名的的渠道包打包神器，Android N推出了 [APK Signature Scheme v2](https://source.android.com/security/apksigning/v2.html)， 是我们之前的渠道打包方式都失效了，这里我们另辟蹊径找到一种简单快速的渠道包声称方式。
 
 ![walle.png](assets/walle.png) 
 
@@ -12,6 +12,7 @@ Walle(瓦力)：支持Android Signature V2 Scheme签名的的渠道包打包神�
 ## 使用说明
 
 ### 根项目的build.gradle配置
+
 在位于项目的根目录 `build.gradle` 文件中添加walle Gradle插件的依赖， 如下：
 
 ```gradle
@@ -45,9 +46,9 @@ JsonObject ChannelReader.readChannelInfo()
 
 ## 技术支持
 
-1. Read The Fuck Source Code.
+1. Read The Fuck Source Code
 2. 通过提交issue来需求帮助
-4. 联系我们需求帮助.
+4. 联系我们需求帮助
 
 ## 贡献代码
 * 欢迎提交issue
