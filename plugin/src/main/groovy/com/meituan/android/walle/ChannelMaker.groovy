@@ -44,7 +44,9 @@ class ChannelMaker extends DefaultTask {
         jsonObject.addProperty("buildType:", variant.buildType.name);
         jsonObject.addProperty("timestamp", System.currentTimeMillis());
 
+        long startTime = System.currentTimeMillis();
         addSaltForV2SignatureScheme(apkFile, jsonObject);
+        println "APK Signature Scheme v2 Channel Maker takes about " + (System.currentTimeMillis() - startTime) + " milliseconds";
     }
 
     ApkVerifier.Result verifyV2SignatureScheme(File apkFile) {
@@ -104,7 +106,6 @@ class ChannelMaker extends DefaultTask {
                 throw new IllegalArgumentException("zip data already has an archive comment");
             }
 
-
             V2SchemeVerifier.Result result = new V2SchemeVerifier.Result();
 
             DataSource apk = new ByteBufferDataSource(byteBuffer);
@@ -143,6 +144,7 @@ class ChannelMaker extends DefaultTask {
 
         def salt = jsonObject.toString();
         println "********* add ID-value ${salt} to Apk Signing Block.";
+
         byte[] bytes = salt.bytes;
         ByteBuffer byteBuffer1 = ByteBuffer.allocate(bytes.length);
         byteBuffer1.order(ByteOrder.LITTLE_ENDIAN);
