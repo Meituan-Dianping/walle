@@ -24,6 +24,6 @@ class ApkSigningPayload {
         final byte[] array = buffer.array();
         final int arrayOffset = buffer.arrayOffset();
         return Arrays.copyOfRange(array, arrayOffset + buffer.position(),
-                arrayOffset + buffer.limit()); ;
+                arrayOffset + buffer.limit());
     }
 }

@@ -50,4 +50,5 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:support-v4:24.1.1'
     compile 'com.android.support:appcompat-v7:24.1.1'
+    compile "com.meituan.android.walle:library:${WALLE_PLUGIN_VERSION}"
 }

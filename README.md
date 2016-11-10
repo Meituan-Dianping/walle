@@ -40,8 +40,7 @@ dependencies {
 在需要渠道等信息时可以通过下面代码进行获取
 
 ```java
-JsonObject ChannelReader.readChannelInfo()
-
+org.json.JSONObject ChannelReader.getChannelInfo(Context context);
 ```
 
 ## 技术支持

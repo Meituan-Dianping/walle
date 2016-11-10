@@ -135,7 +135,6 @@ class ChannelMaker extends DefaultTask {
         ApkSigningPayload payload = new ApkSigningPayload(V2SchemeVerifier.APK_SIGNATURE_SCHEME_V2_BLOCK_ID, apkSignatureSchemeV2Block);
         apkSigningBlock.addPayload(payload);
 
-
         if (!apkSigningBlock.getPayloads().isEmpty() && apkSigningBlockOffset != 0 && centralDirStartOffset != 0) {
             String apkFileName = apkFile.getName();
             if (apkFileName.endsWith(DOT_APK)) {
