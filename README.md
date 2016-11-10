@@ -57,4 +57,5 @@ JsonObject ChannelReader.readChannelInfo()
 ## 参考
 * [APK Signature Scheme v2](https://source.android.com/security/apksigning/v2.html)
 * [Zip Format](https://en.wikipedia.org/wiki/Zip_(file_format))
+* [Android Source Code: ApkSigner](https://android.googlesource.com/platform/build/+/8740e9d)
 
