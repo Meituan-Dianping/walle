@@ -122,7 +122,6 @@ class ChannelMaker extends DefaultTask {
         }
 
         // Find the APK Signing Block. The block immediately precedes the Central Directory.
-        ByteBuffer eocd = zipSections.getZipEndOfCentralDirectory();
         Pair<ByteBuffer, Long> apkSigningBlockAndOffset =
                 V2SchemeVerifier.findApkSigningBlock(apk, centralDirStartOffset);
         ByteBuffer apkSigningBlock2 = apkSigningBlockAndOffset.getFirst();
