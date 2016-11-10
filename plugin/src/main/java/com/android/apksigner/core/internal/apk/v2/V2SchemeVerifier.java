@@ -64,7 +64,7 @@ public abstract class V2SchemeVerifier {
     public static final long APK_SIG_BLOCK_MAGIC_LO = 0x20676953204b5041L;
     private static final int APK_SIG_BLOCK_MIN_SIZE = 32;
 
-    private static final int APK_SIGNATURE_SCHEME_V2_BLOCK_ID = 0x7109871a;
+    public static final int APK_SIGNATURE_SCHEME_V2_BLOCK_ID = 0x7109871a;
 
     /** Hidden constructor to prevent instantiation. */
     private V2SchemeVerifier() {}
@@ -667,7 +667,7 @@ public abstract class V2SchemeVerifier {
                 "No APK Signature Scheme v2 block in APK Signing Block");
     }
 
-    private static void checkByteOrderLittleEndian(ByteBuffer buffer) {
+    public static void checkByteOrderLittleEndian(ByteBuffer buffer) {
         if (buffer.order() != ByteOrder.LITTLE_ENDIAN) {
             throw new IllegalArgumentException("ByteBuffer byte order must be little endian");
         }
@@ -691,7 +691,7 @@ public abstract class V2SchemeVerifier {
      * {@link ByteBuffer#slice()}, the returned buffer's byte order is the same as the source
      * buffer's byte order.
      */
-    private static ByteBuffer sliceFromTo(ByteBuffer source, int start, int end) {
+    public static ByteBuffer sliceFromTo(ByteBuffer source, int start, int end) {
         if (start < 0) {
             throw new IllegalArgumentException("start: " + start);
         }

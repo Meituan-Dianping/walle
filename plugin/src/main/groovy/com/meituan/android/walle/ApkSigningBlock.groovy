@@ -46,11 +46,11 @@ class ApkSigningBlock {
     }
 
     public long writeApkSigningBlock(DataOutput dataOutput) {
-        long length = 24;
+        long length = 24; // 24 = 8(size of block in bytes—same as the very first field (uint64)) + 16 (magic “APK Sig Block 42” (16 bytes))
         for (int index = 0; index < payloads.size(); ++index) {
             ApkSigningPayload payload = payloads.get(index);
             byte[] bytes = payload.getByteBuffer();
-            length += 4 + 8 + bytes.length;
+            length += 12 + bytes.length; // 12 = 8(uint64-length-prefixed) + 4 (ID (uint32))
         }
 
         ByteBuffer byteBuffer = ByteBuffer.allocate(Long.BYTES);
