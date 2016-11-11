@@ -1,11 +1,12 @@
-package com.meituan.android.walle
+package com.meituan.android.walle;
 
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.Arrays;
 
-class ApkSigningPayload {
+public class ApkSigningPayload {
     private final int id;
-    private final ByteBuffer buffer
+    private final ByteBuffer buffer;
 
     ApkSigningPayload(int id, ByteBuffer buffer) {
         super();

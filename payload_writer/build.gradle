@@ -1,0 +1,9 @@
+apply plugin: 'java'
+apply from: file('../gradle_mvn_push.gradle')
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+}
+
+sourceCompatibility = javaVersion
+targetCompatibility = javaVersion
