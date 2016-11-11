@@ -1,6 +1,5 @@
 package com.meituan.android.walle;
 
-import android.apksigner.core.apk.ApkUtils;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -8,17 +7,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import com.android.apksigner.core.internal.util.ByteBufferDataSource;
-import com.android.apksigner.core.internal.util.Pair;
-import com.android.apksigner.core.util.DataSource;
-import com.android.apksigner.core.zip.ZipFormatException;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -52,40 +45,31 @@ public class ChannelReader {
                 return jsonObject;
             }
 
-            FileInputStream fIn = null;
+            RandomAccessFile randomAccessFile = null;
             FileChannel fChan = null;
             long fSize;
-            ByteBuffer byteBuffer;
 
             try {
-                fIn = new FileInputStream(new File(apkPath));
-                fChan = fIn.getChannel();
+                randomAccessFile = new RandomAccessFile(apkPath, "r");
+                fChan = randomAccessFile.getChannel();
                 fSize = fChan.size();
-                // FIXME: 这里直接申请这么多太浪费了，需要考虑使用RandomAccessFile来读取一小部分数据
-                byteBuffer = ByteBuffer.allocate((int) fSize);
-                fChan.read(byteBuffer);
-                byteBuffer.rewind();
+                checkIfHasComment(fChan, fSize);
 
-
-                DataSource apk = new ByteBufferDataSource(byteBuffer);
-                ApkUtils.ZipSections zipSections = ApkUtils.findZipSections(apk);
-
-                long centralDirStartOffset = zipSections.getZipCentralDirectoryOffset();
-                long centralDirEndOffset =
-                        centralDirStartOffset + zipSections.getZipCentralDirectorySizeBytes();
-                long eocdStartOffset = zipSections.getZipEndOfCentralDirectoryOffset();
-                if (centralDirEndOffset != eocdStartOffset) {
-                    return jsonObject;
-                }
+                ByteBuffer zipEndOfCentralDirectory = ByteBuffer.allocate(4);
+                zipEndOfCentralDirectory.order(ByteOrder.LITTLE_ENDIAN);
+                fChan.position(fSize-6);
+                fChan.read(zipEndOfCentralDirectory);
+                long centralDirStartOffset = zipEndOfCentralDirectory.getInt(0);
 
                 // Find the APK Signing Block. The block immediately precedes the Central Directory.
-                ByteBuffer eocd = zipSections.getZipEndOfCentralDirectory();
-                Pair<ByteBuffer, Long> apkSigningBlockAndOffset =
-                        findApkSigningBlock(apk, centralDirStartOffset);
-                ByteBuffer apkSigningBlock2 = apkSigningBlockAndOffset.getFirst();
+                ByteBuffer apkSigningBlock2 = findApkSigningBlock(fChan, centralDirStartOffset);
 
                 Map<Integer, ByteBuffer> idValues = findIdValues(apkSigningBlock2);
                 ByteBuffer channelBlock = idValues.get(APK_CHANNEL_BLOCK_ID);
+
+                if (channelBlock == null) {
+                    return null;
+                }
 
                 final byte[] array = channelBlock.array();
                 final int arrayOffset = channelBlock.arrayOffset();
@@ -99,23 +83,33 @@ public class ChannelReader {
                 try {
                     if (fChan != null) {
                         fChan.close();
-                        fChan = null;
                     }
                 } catch (IOException ignore) {
                 }
                 try {
-                    if (fIn != null) {
-                        fIn.close();
-                        fIn = null;
+                    if (randomAccessFile != null) {
+                        randomAccessFile.close();
                     }
                 } catch (IOException ignore) {
                 }
             }
-        } catch (ZipFormatException ignore) {
         } catch (SignatureNotFoundException ignore) {
         }
 
         return jsonObject;
+    }
+
+    private static void checkIfHasComment(FileChannel fileChannel, long size) throws IOException {
+        ByteBuffer byteBuffer = ByteBuffer.allocate(4);
+        fileChannel.position(size - 22);
+        fileChannel.read(byteBuffer);
+
+        if (byteBuffer.get(0) != 0x50 ||
+                byteBuffer.get(1) != 0x4b ||
+                byteBuffer.get(2) != 0x05 ||
+                byteBuffer.get(3) != 0x06) {
+            throw new IllegalArgumentException("zip data already has an archive comment");
+        }
     }
 
     private static ApplicationInfo getApplicationInfo(Context context)
@@ -143,8 +137,8 @@ public class ChannelReader {
         return applicationInfo;
     }
 
-    private static Pair<ByteBuffer, Long> findApkSigningBlock(
-            DataSource apk, long centralDirOffset) throws IOException, SignatureNotFoundException {
+    private static ByteBuffer findApkSigningBlock(
+            FileChannel fileChannel, long centralDirOffset) throws IOException, SignatureNotFoundException {
         // FORMAT:
         // OFFSET       DATA TYPE  DESCRIPTION
         // * @+0  bytes uint64:    size in bytes (excluding this field)
@@ -160,7 +154,9 @@ public class ChannelReader {
         // Read the magic and offset in file from the footer section of the block:
         // * uint64:   size of block
         // * 16 bytes: magic
-        ByteBuffer footer = apk.getByteBuffer(centralDirOffset - 24, 24);
+        fileChannel.position(centralDirOffset - 24);
+        ByteBuffer footer = ByteBuffer.allocate(24);
+        fileChannel.read(footer);
         footer.order(ByteOrder.LITTLE_ENDIAN);
         if ((footer.getLong(8) != APK_SIG_BLOCK_MAGIC_LO)
                 || (footer.getLong(16) != APK_SIG_BLOCK_MAGIC_HI)) {
@@ -180,7 +176,9 @@ public class ChannelReader {
             throw new SignatureNotFoundException(
                     "APK Signing Block offset out of range: " + apkSigBlockOffset);
         }
-        ByteBuffer apkSigBlock = apk.getByteBuffer(apkSigBlockOffset, totalSize);
+        fileChannel.position(apkSigBlockOffset);
+        ByteBuffer apkSigBlock = ByteBuffer.allocate(totalSize);
+        fileChannel.read(apkSigBlock);
         apkSigBlock.order(ByteOrder.LITTLE_ENDIAN);
         long apkSigBlockSizeInHeader = apkSigBlock.getLong(0);
         if (apkSigBlockSizeInHeader != apkSigBlockSizeInFooter) {
@@ -188,7 +186,7 @@ public class ChannelReader {
                     "APK Signing Block sizes in header and footer do not match: "
                             + apkSigBlockSizeInHeader + " vs " + apkSigBlockSizeInFooter);
         }
-        return Pair.of(apkSigBlock, apkSigBlockOffset);
+        return apkSigBlock;
     }
 
     private static Map<Integer, ByteBuffer> findIdValues(ByteBuffer apkSigningBlock) throws SignatureNotFoundException {
