@@ -45,7 +45,7 @@ org.json.JSONObject ChannelReader.getChannelInfo(Context context);
 
 ## 技术支持
 
-1. Read The Fuck Source Code
+1. Read The Fucking Source Code
 2. 通过提交issue来需求帮助
 4. 联系我们需求帮助
 
