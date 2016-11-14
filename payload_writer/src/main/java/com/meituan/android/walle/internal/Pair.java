@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.apksigner.core.internal.util;
+package com.meituan.android.walle.internal;
 
 /**
  * Pair of two elements.

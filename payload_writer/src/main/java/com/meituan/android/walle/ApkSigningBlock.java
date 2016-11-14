@@ -1,16 +1,17 @@
-package com.meituan.android.walle
+package com.meituan.android.walle;
 
-import com.android.apksigner.core.internal.apk.v2.V2SchemeVerifier
-
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
+import java.io.DataOutput;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * https://source.android.com/security/apksigning/v2.html
  * https://en.wikipedia.org/wiki/Zip_(file_format)
- *
  */
-class ApkSigningBlock {
+public class ApkSigningBlock {
     // The format of the APK Signing Block is as follows (all numeric fields are little-endian):
 
     // .size of block in bytes (excluding this field) (uint64)
@@ -45,7 +46,7 @@ class ApkSigningBlock {
         payloads.add(payload);
     }
 
-    public long writeApkSigningBlock(DataOutput dataOutput) {
+    public long writeApkSigningBlock(DataOutput dataOutput) throws IOException {
         long length = 24; // 24 = 8(size of block in bytes—same as the very first field (uint64)) + 16 (magic “APK Sig Block 42” (16 bytes))
         for (int index = 0; index < payloads.size(); ++index) {
             ApkSigningPayload payload = payloads.get(index);
@@ -53,7 +54,7 @@ class ApkSigningBlock {
             length += 12 + bytes.length; // 12 = 8(uint64-length-prefixed) + 4 (ID (uint32))
         }
 
-        ByteBuffer byteBuffer = ByteBuffer.allocate(Long.BYTES);
+        ByteBuffer byteBuffer = ByteBuffer.allocate(8); // Long.BYTES
         byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
         byteBuffer.putLong(length);
         byteBuffer.flip();
@@ -63,13 +64,13 @@ class ApkSigningBlock {
             ApkSigningPayload payload = payloads.get(index);
             byte[] bytes = payload.getByteBuffer();
 
-            byteBuffer = ByteBuffer.allocate(Long.BYTES);
+            byteBuffer = ByteBuffer.allocate(8); // Long.BYTES
             byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-            byteBuffer.putLong(bytes.length + (Long.BYTES - Integer.BYTES));
+            byteBuffer.putLong(bytes.length + (8 - 4)); // Long.BYTES - Integer.BYTES
             byteBuffer.flip();
             dataOutput.write(byteBuffer.array());
 
-            byteBuffer = ByteBuffer.allocate(Integer.BYTES);
+            byteBuffer = ByteBuffer.allocate(4); // Integer.BYTES
             byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
             byteBuffer.putInt(payload.getId());
             byteBuffer.flip();
@@ -78,21 +79,21 @@ class ApkSigningBlock {
             dataOutput.write(bytes);
         }
 
-        byteBuffer = ByteBuffer.allocate(Long.BYTES);
+        byteBuffer = ByteBuffer.allocate(8); // Long.BYTES
         byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
         byteBuffer.putLong(length);
         byteBuffer.flip();
         dataOutput.write(byteBuffer.array());
 
-        byteBuffer = ByteBuffer.allocate(Long.BYTES);
+        byteBuffer = ByteBuffer.allocate(8); // Long.BYTES
         byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-        byteBuffer.putLong(V2SchemeVerifier.APK_SIG_BLOCK_MAGIC_LO);
+        byteBuffer.putLong(PayloadWriter.APK_SIG_BLOCK_MAGIC_LO);
         byteBuffer.flip();
         dataOutput.write(byteBuffer.array());
 
-        byteBuffer = ByteBuffer.allocate(Long.BYTES);
+        byteBuffer = ByteBuffer.allocate(8); // Long.BYTES
         byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-        byteBuffer.putLong(V2SchemeVerifier.APK_SIG_BLOCK_MAGIC_HI);
+        byteBuffer.putLong(PayloadWriter.APK_SIG_BLOCK_MAGIC_HI);
         byteBuffer.flip();
         dataOutput.write(byteBuffer.array());
 

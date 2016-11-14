@@ -3,6 +3,10 @@ buildscript {
     repositories {
         mavenLocal()
         jcenter()
+
+        // FIXME
+        maven { url 'http://depot.sankuai.com/nexus/content/groups/public' }
+        maven { url 'http://depot.sankuai.com/nexus/content/groups/public-snapshots' }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.2.0'
@@ -13,6 +17,10 @@ buildscript {
 allprojects {
     repositories {
         mavenLocal()
+
+        // FIXME
+        maven { url 'http://depot.sankuai.com/nexus/content/groups/public' }
+        maven { url 'http://depot.sankuai.com/nexus/content/groups/public-snapshots' }
         jcenter()
     }
 }

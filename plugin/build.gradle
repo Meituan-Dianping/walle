@@ -1,6 +1,7 @@
 apply plugin: 'groovy'
 apply from: file('../gradle_mvn_push.gradle')
 
+
 dependencies {
     compile gradleApi()
     compile localGroovy()
@@ -9,5 +10,9 @@ dependencies {
     compile 'commons-codec:commons-codec:1.6'
     compile 'org.apache.commons:commons-lang3:3.4'
     compile 'com.android.tools.build:gradle:2.2.0'
+    compile "com.meituan.android.walle:payload_writer:${VERSION_NAME}"
 }
 
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
