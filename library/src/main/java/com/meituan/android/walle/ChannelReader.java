@@ -37,8 +37,7 @@ public class ChannelReader {
             }
 
 
-            Map<Integer, ByteBuffer> idValues = PayloadReader.readIDValuePairs(apkPath);
-            ByteBuffer channelBlock = idValues.get(APK_CHANNEL_BLOCK_ID);
+            ByteBuffer channelBlock = PayloadReader.read(apkPath, APK_CHANNEL_BLOCK_ID);
 
             if (channelBlock == null) {
                 return null;

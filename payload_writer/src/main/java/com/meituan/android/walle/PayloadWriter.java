@@ -20,6 +20,12 @@ class PayloadWriter {
 
     public static final int APK_SIGNATURE_SCHEME_V2_BLOCK_ID = 0x7109871a;
 
+    public static boolean write(String apkFile, int id, ByteBuffer buffer) {
+        Map<Integer, ByteBuffer> idValues = new HashMap<Integer, ByteBuffer>();
+        idValues.put(id, buffer);
+        return writeIDValuePairs(apkFile, idValues);
+    }
+
     public static boolean writeIDValuePairs(String apkFile, Map<Integer, ByteBuffer> idValues) {
         if (idValues == null || idValues.isEmpty()) {
             return false;
@@ -84,7 +90,7 @@ class PayloadWriter {
 
                 // 读取CentralDir
                 fIn.seek(centralDirStartOffset);
-                byte[] centralDirBytes = new byte[(int)(fileChannel.size() - centralDirStartOffset)];
+                byte[] centralDirBytes = new byte[(int) (fileChannel.size() - centralDirStartOffset)];
                 fIn.read(centralDirBytes);
 
                 fileChannel.position(apkSigningBlockOffset);

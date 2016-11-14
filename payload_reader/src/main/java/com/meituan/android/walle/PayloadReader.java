@@ -14,6 +14,12 @@ public class PayloadReader {
     private static final long APK_SIG_BLOCK_MAGIC_LO = 0x20676953204b5041L;
     private static final int APK_SIG_BLOCK_MIN_SIZE = 32;
 
+    public static ByteBuffer read(String apkPath, int id) {
+        Map<Integer, ByteBuffer> idValues = readIDValuePairs(apkPath);
+
+        return idValues.get(id);
+    }
+
     public static Map<Integer, ByteBuffer> readIDValuePairs(String apkPath) {
         Map<Integer, ByteBuffer> idValues = null;
         try {

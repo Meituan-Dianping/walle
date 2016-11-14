@@ -88,9 +88,6 @@ class ChannelMaker extends DefaultTask {
             byteBuffer.put(bytes, 0, bytes.length);
             byteBuffer.flip();
 
-            Map<Integer, ByteBuffer> idValues = new HashMap<Integer, ByteBuffer>();
-            idValues.put(APK_CHANNEL_BLOCK_ID, byteBuffer);
-
             String channelName = "${index}";
             if (jsonObject.has(JSON_CHANNEL_NAME)) {
                 channelName = jsonObject.get(JSON_CHANNEL_NAME).getAsString();
@@ -100,7 +97,7 @@ class ChannelMaker extends DefaultTask {
             long startTime = System.currentTimeMillis();
 
             FileUtils.copyFile(apkFile, channelApkFile);
-            PayloadWriter.writeIDValuePairs(channelApkFile.absolutePath, idValues);
+            PayloadWriter.write(channelApkFile.absolutePath, APK_CHANNEL_BLOCK_ID, byteBuffer);
 
             println "APK Signature Scheme v2 Channel Maker takes about " + (System.currentTimeMillis() - startTime) + " milliseconds";
         }
