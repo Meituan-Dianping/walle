@@ -1,5 +1,5 @@
 apply plugin: 'groovy'
-apply from: file('../gradle_mvn_push.gradle')
+apply from: rootProject.file("mt_maven.gradle")
 
 
 dependencies {
@@ -10,7 +10,7 @@ dependencies {
     compile 'commons-codec:commons-codec:1.6'
     compile 'org.apache.commons:commons-lang3:3.4'
     compile 'com.android.tools.build:gradle:2.2.0'
-    compile "com.meituan.android.walle:payload_writer:${VERSION_NAME}"
+    compile project(':payload_writer')
 }
 
 configurations.all {

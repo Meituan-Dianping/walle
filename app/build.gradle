@@ -1,6 +1,20 @@
 apply plugin: 'com.android.application'
 apply plugin: 'walle'
 
+buildscript {
+    repositories {
+        mavenLocal()
+        jcenter()
+
+        // FIXME
+        maven { url 'http://depot.sankuai.com/nexus/content/groups/public' }
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.2.0'
+        classpath "com.meituan.android.walle:plugin:0.0.1-SNAPSHOT"
+    }
+}
+
 android {
 
     compileSdkVersion 24
@@ -54,5 +68,5 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:support-v4:24.1.1'
     compile 'com.android.support:appcompat-v7:24.1.1'
-    compile "com.meituan.android.walle:library:${WALLE_PLUGIN_VERSION}"
+    compile project(':library')
 }

@@ -1,0 +1,30 @@
+apply plugin: 'com.github.dcendents.android-maven'
+
+group = GROUP
+version = VERSION_NAME
+
+def getRepositoryUrl() {
+    return "http://depot.sankuai.com/nexus/content/repositories/" + (isSnapshot() ? "snapshots/" : "releases/")
+}
+
+def isSnapshot() {
+    return version.endsWith("SNAPSHOT");
+}
+
+def nexusUser = ""
+def nexusPassword = ""
+File file = project.rootProject.file('local.properties');
+if (file.exists()) {
+    Properties properties = new Properties()
+    properties.load(file.newDataInputStream());
+    nexusUser = properties.getProperty("nexus.user")
+    nexusPassword = properties.getProperty("nexus.password")
+}
+
+uploadArchives {
+    repositories.mavenDeployer {
+        repository(url: repositoryUrl) {
+            authentication(userName: nexusUser, password: nexusPassword)
+        }
+    }
+}
