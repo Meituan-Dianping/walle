@@ -1,0 +1,11 @@
+apply plugin: 'java'
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'commons-cli:commons-cli:1.3.1'
+    compile 'commons-io:commons-io:2.5'
+    compile project(':payload_writer')
+}
+
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"
