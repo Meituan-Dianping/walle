@@ -28,7 +28,6 @@ public class WalleCommandLine {
         options.addOption(outputOption);
 
         Option channelOption = new Option("c", "channel", true, "single channel");
-        channelOption.setRequired(true);
         options.addOption(channelOption);
 
         Option infoOption = new Option("e", "extraInfo", true, "extra info\n e.g.: -i time=1 type=android");
@@ -49,6 +48,9 @@ public class WalleCommandLine {
         }
 
         String channel = cmd.getOptionValue("channel");
+        if (channel==null || channel.length() == 0) {
+            channel = "undefined";
+        }
 
         String inputPath = cmd.getOptionValue("inputFile");
         File inputFile = new File(inputPath);
