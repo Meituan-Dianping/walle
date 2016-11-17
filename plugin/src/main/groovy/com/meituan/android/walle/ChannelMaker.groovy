@@ -4,8 +4,6 @@ import com.android.apksigner.core.ApkVerifier
 import com.android.apksigner.core.internal.util.ByteBufferDataSource
 import com.android.apksigner.core.util.DataSource
 import com.android.build.gradle.api.BaseVariant
-import com.google.gson.JsonArray
-import com.google.gson.JsonObject
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
 import org.gradle.api.DefaultTask
@@ -14,13 +12,10 @@ import org.gradle.api.Project
 import org.gradle.api.tasks.TaskAction
 
 import java.nio.ByteBuffer
-import java.nio.ByteOrder
 import java.nio.channels.FileChannel
 
 class ChannelMaker extends DefaultTask {
-    private static final int APK_CHANNEL_BLOCK_ID = 0x71777777;
 
-    private static final String JSON_CHANNEL_NAME = "channel";
     private static final String DOT_APK = ".apk";
 
     public BaseVariant variant;
@@ -38,23 +33,36 @@ class ChannelMaker extends DefaultTask {
             throw new GradleException("${apkFile} is not existed!");
         }
 
+        String channel = (variant.flavorName != null && variant.flavorName.length() > 0) ? variant.flavorName : 'undefined'
+        Map<String, String> extraInfo = new HashMap<>()
+        extraInfo.put("buildType", variant.buildType.name)
+        extraInfo.put("timestamp", "" + System.currentTimeMillis())
+
+        checkV2Signature()
+
+        String apkFileName = apkFile.getName();
+        if (apkFileName.endsWith(DOT_APK)) {
+            apkFileName = apkFileName.substring(0, apkFileName.lastIndexOf(DOT_APK));
+        }
+        File channelApkFile = new File("${apkFileName}-${channel}${DOT_APK}", apkFile.parentFile);
+
+        long startTime = System.currentTimeMillis();
+
+        FileUtils.copyFile(apkFile, channelApkFile);
+        PayloadWriter.putChannel(channelApkFile, channel, extraInfo)
+
+        println "APK Signature Scheme v2 Channel Maker takes about " + (System.currentTimeMillis() - startTime) + " milliseconds";
+
+    }
+
+    private void checkV2Signature() {
         FileInputStream fIn;
         FileChannel fChan;
-        long fSize;
-        ByteBuffer byteBuffer;
-
-        JsonArray jsonArray = new JsonArray();
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("channel", (variant.flavorName != null && variant.flavorName.length() > 0) ? variant.flavorName : 'undefined');
-        jsonObject.addProperty("buildType:", variant.buildType.name);
-        jsonObject.addProperty("timestamp", System.currentTimeMillis());
-        jsonArray.add(jsonObject);
-
         try {
             fIn = new FileInputStream(apkFile);
             fChan = fIn.getChannel();
-            fSize = fChan.size();
-            byteBuffer = ByteBuffer.allocate((int) fSize);
+            long fSize = fChan.size();
+            ByteBuffer byteBuffer = ByteBuffer.allocate((int) fSize);
             fChan.read(byteBuffer);
             byteBuffer.rewind();
 
@@ -71,36 +79,5 @@ class ChannelMaker extends DefaultTask {
             IOUtils.closeQuietly(fChan);
             IOUtils.closeQuietly(fIn);
         }
-
-        String apkFileName = apkFile.getName();
-        if (apkFileName.endsWith(DOT_APK)) {
-            apkFileName = apkFileName.substring(0, apkFileName.lastIndexOf(DOT_APK));
-        }
-        for (int index = 0; index < jsonArray.size(); ++index) {
-            jsonObject = jsonArray.get(index);
-
-            def salt = jsonObject.toString();
-            println "********* add ID-value ${APK_CHANNEL_BLOCK_ID} : ${salt} to Apk Signing Block.";
-
-            byte[] bytes = salt.bytes;
-            byteBuffer = ByteBuffer.allocate(bytes.length);
-            byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-            byteBuffer.put(bytes, 0, bytes.length);
-            byteBuffer.flip();
-
-            String channelName = "${index}";
-            if (jsonObject.has(JSON_CHANNEL_NAME)) {
-                channelName = jsonObject.get(JSON_CHANNEL_NAME).getAsString();
-            }
-            File channelApkFile = new File("${apkFileName}-${channelName}${DOT_APK}", apkFile.parentFile);
-
-            long startTime = System.currentTimeMillis();
-
-            FileUtils.copyFile(apkFile, channelApkFile);
-            PayloadWriter.write(channelApkFile.absolutePath, APK_CHANNEL_BLOCK_ID, byteBuffer);
-
-            println "APK Signature Scheme v2 Channel Maker takes about " + (System.currentTimeMillis() - startTime) + " milliseconds";
-        }
-
     }
 }

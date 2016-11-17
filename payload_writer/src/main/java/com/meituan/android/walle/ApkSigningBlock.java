@@ -1,5 +1,7 @@
 package com.meituan.android.walle;
 
+import com.meituan.android.walle.internal.ApkUtil;
+
 import java.io.DataOutput;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -87,13 +89,13 @@ public class ApkSigningBlock {
 
         byteBuffer = ByteBuffer.allocate(8); // Long.BYTES
         byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-        byteBuffer.putLong(PayloadWriter.APK_SIG_BLOCK_MAGIC_LO);
+        byteBuffer.putLong(ApkUtil.APK_SIG_BLOCK_MAGIC_LO);
         byteBuffer.flip();
         dataOutput.write(byteBuffer.array());
 
         byteBuffer = ByteBuffer.allocate(8); // Long.BYTES
         byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-        byteBuffer.putLong(PayloadWriter.APK_SIG_BLOCK_MAGIC_HI);
+        byteBuffer.putLong(ApkUtil.APK_SIG_BLOCK_MAGIC_HI);
         byteBuffer.flip();
         dataOutput.write(byteBuffer.array());
 

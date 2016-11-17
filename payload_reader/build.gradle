@@ -1,5 +1,5 @@
 apply plugin: 'java'
-apply from: file('../gradle_mvn_push.gradle')
+apply from: rootProject.file("mt_maven.gradle")
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])

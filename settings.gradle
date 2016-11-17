@@ -1,1 +1,1 @@
-include ':plugin', ':library', ':payload_reader', ':payload_writer'
+include ':plugin', ':library', ':payload_reader', ':payload_writer', ':app'
