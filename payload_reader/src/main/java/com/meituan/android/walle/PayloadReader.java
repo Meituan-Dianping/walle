@@ -1,7 +1,6 @@
 package com.meituan.android.walle;
 
 import com.meituan.android.walle.internal.ApkUtil;
-import com.meituan.android.walle.internal.Pair;
 import com.meituan.android.walle.internal.SignatureNotFoundException;
 
 import java.io.File;
@@ -24,14 +23,14 @@ public class PayloadReader {
      * @param apkFile apk file
      * @return null if not found
      */
-    public static Pair<String, Map<String, String>> getChannel(File apkFile) {
+    public static ChannelInfo getChannel(File apkFile) {
         Map<String, String> result = getChannelInfo(apkFile);
         if (result == null) {
             return null;
         }
         String channel = result.get(CHANNEL_KEY);
         result.remove(CHANNEL_KEY);
-        return Pair.of(channel, result);
+        return new ChannelInfo(channel, result);
     }
     /**
      * get channel & extra info by map, use {@link PayloadReader#CHANNEL_KEY PayloadReader.CHANNEL_KEY} get channel

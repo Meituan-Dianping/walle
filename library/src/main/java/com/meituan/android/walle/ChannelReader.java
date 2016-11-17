@@ -7,14 +7,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import com.meituan.android.walle.internal.Pair;
-
 import java.io.File;
-import java.util.Map;
 
 public class ChannelReader {
     @Nullable
-    public static Pair<String, Map<String, String>> getChannelInfo(@NonNull Context context) {
+    public static ChannelInfo getChannelInfo(@NonNull Context context) {
         String apkPath = null;
         try {
             ApplicationInfo applicationInfo = getApplicationInfo(context.getApplicationContext());

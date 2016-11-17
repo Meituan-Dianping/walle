@@ -4,7 +4,7 @@ group = GROUP
 version = VERSION_NAME
 
 def getRepositoryUrl() {
-    return "http://depot.sankuai.com/nexus/content/repositories/" + (isSnapshot() ? "snapshots/" : "releases/")
+    return isSnapshot() ? SNAPSHOT_REPOSITORY_URL:RELEASE_REPOSITORY_URL
 }
 
 def isSnapshot() {
