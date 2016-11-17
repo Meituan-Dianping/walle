@@ -14,8 +14,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import static sun.plugin.javascript.navig.JSType.Option;
-
 
 public class WalleCommandLine {
     public static void main(String[] args) throws Exception {
@@ -30,7 +28,7 @@ public class WalleCommandLine {
         options.addOption(outputOption);
 
         Option channelOption = new Option("c", "channel", true, "single channel");
-        inputOption.setRequired(true);
+        channelOption.setRequired(true);
         options.addOption(channelOption);
 
         Option infoOption = new Option("e", "extraInfo", true, "extra info\n e.g.: -i time=1 type=android");
