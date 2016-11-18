@@ -19,7 +19,7 @@ import java.util.Set;
 import static com.meituan.android.walle.PayloadReader.CHANNEL_KEY;
 
 
-class PayloadWriter {
+public class PayloadWriter {
 
     /**
      * write extra info with channel fixed id
@@ -178,6 +178,8 @@ class PayloadWriter {
 
                 // store CentralDir
                 fIn.write(centralDirBytes);
+                // update length
+                fIn.setLength(fIn.getFilePointer());
 
                 // update CentralDir Offset
 
