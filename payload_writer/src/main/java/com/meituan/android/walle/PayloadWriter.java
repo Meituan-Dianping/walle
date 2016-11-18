@@ -51,7 +51,7 @@ class PayloadWriter {
     public static boolean putChannel(File apkFile, String channel, Map<String,String> extraInfo) {
         try {
             Map<String, String> newData = new HashMap<String, String>();
-            Map<String, String> existsData = PayloadReader.getChannelInfo(apkFile);
+            Map<String, String> existsData = PayloadReader.getChannelInfoMap(apkFile);
             if (existsData != null) {
                 newData.putAll(existsData);
             }

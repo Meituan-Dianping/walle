@@ -16,6 +16,7 @@ import java.util.Map;
 
 public class PayloadReader {
     public static final String CHANNEL_KEY = "channel";
+
     /**
      * easy api for get channel & extra info.<br/>
      * pair first: channel <br/>
@@ -23,8 +24,8 @@ public class PayloadReader {
      * @param apkFile apk file
      * @return null if not found
      */
-    public static ChannelInfo getChannel(File apkFile) {
-        Map<String, String> result = getChannelInfo(apkFile);
+    public static ChannelInfo getChannelInfo(File apkFile) {
+        Map<String, String> result = getChannelInfoMap(apkFile);
         if (result == null) {
             return null;
         }
@@ -37,7 +38,7 @@ public class PayloadReader {
      * @param apkFile apk file
      * @return null if not found
      */
-    public static Map<String, String> getChannelInfo(File apkFile) {
+    public static Map<String, String> getChannelInfoMap(File apkFile) {
         try {
             ByteBuffer byteBuffer = get(apkFile, ApkUtil.APK_CHANNEL_BLOCK_ID);
             if (byteBuffer == null) {
