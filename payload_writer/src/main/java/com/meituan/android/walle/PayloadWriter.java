@@ -4,6 +4,8 @@ import com.meituan.android.walle.internal.ApkUtil;
 import com.meituan.android.walle.internal.Pair;
 import com.meituan.android.walle.internal.SignatureNotFoundException;
 
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -62,14 +64,8 @@ public class PayloadWriter {
             if (channel != null && channel.length() > 0) {
                 newData.put(CHANNEL_KEY, channel);
             }
-            StringBuilder stringBuilder = new StringBuilder();
-            for (Map.Entry<String, String> entry : newData.entrySet()) {
-                stringBuilder.append(entry.getKey());
-                stringBuilder.append("=");
-                stringBuilder.append(entry.getValue());
-                stringBuilder.append(";");
-            }
-            byte[] bytes = stringBuilder.toString().getBytes(ApkUtil.DEFAULT_CHARSET);
+            JSONObject jsonObject = new JSONObject(newData);
+            byte[] bytes = jsonObject.toString().getBytes(ApkUtil.DEFAULT_CHARSET);
             ByteBuffer byteBuffer = ByteBuffer.allocate(bytes.length);
             byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
             byteBuffer.put(bytes, 0, bytes.length);

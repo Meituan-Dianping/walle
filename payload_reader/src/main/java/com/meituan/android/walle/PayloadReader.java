@@ -3,6 +3,9 @@ package com.meituan.android.walle;
 import com.meituan.android.walle.internal.ApkUtil;
 import com.meituan.android.walle.internal.SignatureNotFoundException;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -11,6 +14,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 
@@ -48,16 +52,17 @@ public class PayloadReader {
             byte[] bytes = getBytes(byteBuffer);
 
             String channelData = new String(bytes, ApkUtil.DEFAULT_CHARSET);
-            String[] info = channelData.split(";");
-            Map<String, String> result = new HashMap<>(info.length);
-            for (String s : info) {
-                String[] keyValues = s.split("=");
-                if (keyValues.length == 2) {
-                    result.put(keyValues[0], keyValues[1]);
-                }
+            JSONObject jsonObject = new JSONObject(channelData);
+            Iterator keys =  jsonObject.keys();
+            Map<String, String> result = new HashMap<>();
+            while(keys.hasNext()) {
+                String key = keys.next().toString();
+                result.put(key, jsonObject.getString(key));
             }
             return result;
         } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
             e.printStackTrace();
         }
         return null;
