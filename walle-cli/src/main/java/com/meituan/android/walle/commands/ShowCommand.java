@@ -12,14 +12,11 @@ import java.util.List;
 import java.util.Map;
 
 
-@Parameters(commandDescription = "get channel info from apk")
-public class ReadChannelCommand implements IWalleCommand {
+@Parameters(commandDescription = "get channel info from apk and show all by default")
+public class ShowCommand implements IWalleCommand {
 
     @Parameter(required = true, description = "file1 file2 file3 ...", converter = FileConverter.class, variableArity = true)
     private List<File> files;
-
-    @Parameter(names = {"-a", "--all"}, description = "get all channel info")
-    private boolean all = false;
 
     @Parameter(names = {"-e", "--extraInfo"}, description = "get channel extra info")
     private boolean extraInfo = false;
@@ -29,15 +26,6 @@ public class ReadChannelCommand implements IWalleCommand {
 
     @Override
     public void parse() {
-        if(all) {
-            printInfo(new Fun1<File, String>() {
-                @Override
-                public String apply(File file) {
-                    Map<String, String> map = PayloadReader.getChannelInfoMap(file);
-                    return map == null ? "" : map.toString();
-                }
-            });
-        }
         if(extraInfo) {
             printInfo(new Fun1<File, String>() {
                 @Override
@@ -50,6 +38,7 @@ public class ReadChannelCommand implements IWalleCommand {
                     return map == null ? "" : map.toString();
                 }
             });
+            return;
         }
         if(channel) {
             printInfo(new Fun1<File, String>() {
@@ -62,7 +51,15 @@ public class ReadChannelCommand implements IWalleCommand {
                     return channelInfo.getChannel();
                 }
             });
+            return;
         }
+        printInfo(new Fun1<File, String>() {
+            @Override
+            public String apply(File file) {
+                Map<String, String> map = PayloadReader.getChannelInfoMap(file);
+                return map == null ? "" : map.toString();
+            }
+        });
     }
     private void printInfo(Fun1<File, String> fun) {
         for (File file : files) {

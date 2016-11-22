@@ -1,5 +1,6 @@
 package com.meituan.android.walle;
 
+import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 
 import java.io.IOException;
@@ -12,11 +13,19 @@ import java.util.jar.Manifest;
 
 
 public class WalleCommandLine {
-    @Parameter(names = {"-v", "--version"})
-    private boolean checkVersion = false;
-    public void parse() {
-        if (checkVersion) {
+    @Parameter(names = {"-v", "--version"}, description = "show walle version")
+    private boolean showVersion = false;
+
+    @Parameter(names = {"-h", "--help"}, description = "show walle command line help")
+    private boolean showHelp = false;
+
+    public void parse(JCommander commander) {
+        if (showVersion) {
             System.out.println(getVersion());
+            return;
+        }
+        if (showHelp) {
+            commander.usage();
         }
     }
     private static String getVersion() {

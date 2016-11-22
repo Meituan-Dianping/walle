@@ -14,16 +14,16 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-@Parameters(commandDescription = "write channel info into apk")
+@Parameters(commandDescription = "put channel info into apk")
 public class WriteChannelCommand implements IWalleCommand{
 
     @Parameter(required = true, description = "inputFile [outputFile]", arity = 2, converter = FileConverter.class)
     private List<File> files;
 
-    @Parameter(names = {"-e", "--extraInfo"}, converter = CommaSeparatedKeyValueConverter.class, description = "Comma-separated list of key-value info, e.g.: -e time=1,type=android")
+    @Parameter(names = {"-e", "--extraInfo"}, converter = CommaSeparatedKeyValueConverter.class, description = "Comma-separated list of key=value info, eg: -e time=1,type=android")
     private Map<String, String> extraInfo;
 
-    @Parameter(names = {"-c", "--channel"}, description = "single channel, e.g.: meituan")
+    @Parameter(names = {"-c", "--channel"}, description = "single channel, eg: -c meituan")
     private String channel = "undefined";
 
     @Override

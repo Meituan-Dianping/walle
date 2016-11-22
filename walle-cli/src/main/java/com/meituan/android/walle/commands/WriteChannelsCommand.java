@@ -14,37 +14,36 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-@Parameters(commandDescription = "write lots of channel apk")
+@Parameters(commandDescription = "channel apk batch production")
 public class WriteChannelsCommand implements IWalleCommand{
 
     @Parameter(required = true, description = "inputFile [outputDirectory]", arity = 2, converter = FileConverter.class)
     private List<File> files;
 
-    @Parameter(names = {"-e", "--extraInfo"}, converter = CommaSeparatedKeyValueConverter.class, description = "Comma-separated list of key-value info, e.g.: -e time=1,type=android")
+    @Parameter(names = {"-e", "--extraInfo"}, converter = CommaSeparatedKeyValueConverter.class, description = "Comma-separated list of key=value info, eg: -e time=1,type=android")
     private Map<String, String> extraInfo;
 
-    @Parameter(names = {"-c", "--channelList"}, description = "Comma-separated list of channel, e.g.: meituan,xiaomi")
-    private String channelList;
+    @Parameter(names = {"-c", "--channelList"}, description = "Comma-separated list of channel, eg: -c meituan,xiaomi")
+    private List<String> channelList;
 
     @Override
     public void parse() {
         File inputFile = files.get(0);
-        File outputFile = null;
+        File outputDir = null;
         if (files.size() == 2) {
-            outputFile = files.get(1);
-            if (!outputFile.isDirectory()) {
-                throw new RuntimeException("output need directory");
+            outputDir = files.get(1);
+            if (!outputDir.exists()) {
+                outputDir.mkdirs();
             }
         } else {
-            outputFile = inputFile.getParentFile();
+            outputDir = inputFile.getParentFile();
         }
 
-        String[] channels = channelList.split(",");
-        for (String channel : channels) {
+        for (String channel : channelList) {
             String name = FilenameUtils.getBaseName(inputFile.getName());
             String extension = FilenameUtils.getExtension(inputFile.getName());
             String newName = name + "_" + channel + "." + extension;
-            File channelApk = new File(outputFile, newName);
+            File channelApk = new File(outputDir, newName);
             try {
                 FileUtils.copyFile(inputFile, channelApk);
                 PayloadWriter.putChannel(channelApk, channel, extraInfo);
