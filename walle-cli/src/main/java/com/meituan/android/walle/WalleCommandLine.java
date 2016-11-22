@@ -1,84 +1,57 @@
 package com.meituan.android.walle;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.jar.Attributes;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 
 
 public class WalleCommandLine {
-    public static void main(String[] args) throws Exception {
+    @Parameter(names = {"-v", "--version"}, description = "show walle version")
+    private boolean showVersion = false;
 
-        Options options = new Options();
+    @Parameter(names = {"-h", "--help"}, description = "show walle command line help")
+    private boolean showHelp = false;
 
-        Option inputOption = new Option("i", "inputFile", true, "origin apk file");
-        inputOption.setRequired(true);
-        options.addOption(inputOption);
-
-        Option outputOption = new Option("o", "outputFile", true, "output apk file");
-        options.addOption(outputOption);
-
-        Option channelOption = new Option("c", "channel", true, "single channel");
-        options.addOption(channelOption);
-
-        Option infoOption = new Option("e", "extraInfo", true, "extra info\n e.g.: -i time=1 type=android");
-        infoOption.setArgs(Option.UNLIMITED_VALUES);
-        options.addOption(infoOption);
-
-        CommandLineParser parser = new DefaultParser();
-        HelpFormatter formatter = new HelpFormatter();
-        CommandLine cmd;
-
-        try {
-            cmd = parser.parse(options, args);
-        } catch (ParseException e) {
-            System.out.println(e.getMessage());
-            formatter.printHelp("utility-name", options);
-            System.exit(1);
+    public void parse(JCommander commander) {
+        if (showVersion) {
+            System.out.println(getVersion());
             return;
         }
-
-        String channel = cmd.getOptionValue("channel");
-        if (channel==null || channel.length() == 0) {
-            channel = "undefined";
+        if (showHelp) {
+            commander.usage();
         }
-
-        String inputPath = cmd.getOptionValue("inputFile");
-        File inputFile = new File(inputPath);
-
-        String outputPath =cmd.getOptionValue("outputFile");
-        File outputFile = null;
-        if (outputPath == null) {
-            String name = FilenameUtils.getBaseName(inputFile.getName());
-            String extension = FilenameUtils.getExtension(inputFile.getName());
-            String newName = name + "_" + channel + "." + extension;
-            outputFile = new File(inputFile.getParent(), newName);
-        } else {
-            outputFile = new File(outputPath);
-        }
-
-        String[] extraInfo = cmd.getOptionValues("extraInfo");
-        Map<String, String> extraInfoMap = null;
-        if (extraInfo != null) {
-            extraInfoMap = new HashMap<>();
-            for (String s : extraInfo) {
-                String[] keyValue = s.split("=");
-                if (keyValue.length == 2) {
-                    extraInfoMap.put(keyValue[0], keyValue[1]);
+    }
+    private static String getVersion() {
+        Enumeration resEnum;
+        try {
+            resEnum = Thread.currentThread().getContextClassLoader().getResources(JarFile.MANIFEST_NAME);
+            while (resEnum.hasMoreElements()) {
+                try {
+                    URL url = (URL)resEnum.nextElement();
+                    InputStream is = url.openStream();
+                    if (is != null) {
+                        Manifest manifest = new Manifest(is);
+                        Attributes mainAttribs = manifest.getMainAttributes();
+                        String version = mainAttribs.getValue("Walle-Version");
+                        if(version != null) {
+                            return version;
+                        }
+                    }
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
+        } catch (IOException e1) {
+            e1.printStackTrace();
         }
-        System.out.println(outputFile);
-        FileUtils.copyFile(inputFile, outputFile);
-        PayloadWriter.putChannel(outputFile, channel, extraInfoMap);
+        return null;
     }
 }

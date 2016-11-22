@@ -12,16 +12,18 @@ apply plugin: 'com.github.johnrengelman.shadow'
 
 jar {
     manifest {
-        attributes 'Main-Class': 'com.meituan.android.walle.WalleCommandLine'
+        attributes 'Main-Class': 'com.meituan.android.walle.Main'
+        attributes 'Walle-Version': VERSION_NAME
     }
 }
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'commons-cli:commons-cli:1.3.1'
+    compile "com.beust:jcommander:1.48"
     compile 'commons-io:commons-io:2.5'
     compile project(':payload_writer')
+    compile 'org.json:json:20080701' //与gradle plugin使用同一版本
 }
 
-sourceCompatibility = "1.7"
-targetCompatibility = "1.7"
+sourceCompatibility = javaVersion
+targetCompatibility = javaVersion
