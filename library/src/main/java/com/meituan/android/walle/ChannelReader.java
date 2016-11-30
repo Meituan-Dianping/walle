@@ -21,15 +21,6 @@ public class ChannelReader {
     }
 
     @Nullable
-    public static String getChannelExtraInfoByKey(@NonNull Context context, @NonNull String key) {
-        ChannelInfo channelInfo = getChannelInfo(context);
-        if (channelInfo == null) {
-            return null;
-        }
-        return channelInfo.getExtraInfo().get(key);
-    }
-
-    @Nullable
     public static ChannelInfo getChannelInfo(@NonNull Context context) {
         String apkPath = getApkPath(context);
         if (TextUtils.isEmpty(apkPath)) {

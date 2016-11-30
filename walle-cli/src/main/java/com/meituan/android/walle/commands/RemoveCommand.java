@@ -21,7 +21,7 @@ public class RemoveCommand implements IWalleCommand {
         removeInfo(new Fun1<File, Boolean>() {
             @Override
             public Boolean apply(File file) {
-                return PayloadWriter.removeAll(file);
+                return PayloadWriter.removeChannel(file);
             }
         });
     }
