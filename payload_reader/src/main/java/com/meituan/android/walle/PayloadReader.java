@@ -63,6 +63,7 @@ public class PayloadReader {
     }
     /**
      * get raw string from channel id
+     *
      * @param apkFile apk file
      * @return null if not found
      */
@@ -102,7 +103,7 @@ public class PayloadReader {
      * @param byteBuffer buffer
      * @return useful data
      */
-    private static byte[] getBytes(ByteBuffer byteBuffer) {
+    public static byte[] getBytes(ByteBuffer byteBuffer) {
         final byte[] array = byteBuffer.array();
         final int arrayOffset = byteBuffer.arrayOffset();
         return Arrays.copyOfRange(array, arrayOffset + byteBuffer.position(),

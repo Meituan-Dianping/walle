@@ -55,7 +55,8 @@ public class PayloadWriter {
         return putRawChannelInfo(apkFile, jsonObject.toString());
     }
     /**
-     * write custom content with channel fixed id
+     * write custom content with channel fixed id <br/>
+     * NOTE: {@link PayloadReader#getChannelInfo(File)}  and {@link PayloadReader#getChannelInfoMap(File)}  may be affected
      * @param apkFile apk file
      * @param string custom content
      * @return if success
