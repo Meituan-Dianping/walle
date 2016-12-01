@@ -30,7 +30,7 @@ public class ChannelReader {
     }
 
     @Nullable
-    public static String getChannelInfoByKey(@NonNull Context context, @NonNull String key) {
+    public static String get(@NonNull Context context, @NonNull String key) {
         Map<String, String> channelMap = getChannelInfoMap(context);
         if (channelMap == null) {
             return null;
