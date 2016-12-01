@@ -19,14 +19,26 @@ public class ShowCommand implements IWalleCommand {
     private List<File> files;
 
     @Parameter(names = {"-e", "--extraInfo"}, description = "get channel extra info")
-    private boolean extraInfo = false;
+    private boolean showExtraInfo = false;
 
     @Parameter(names = {"-c", "--channel"}, description = "get channel")
-    private boolean channel = false;
+    private boolean shoChannel = false;
+
+    @Parameter(names = {"-r", "--raw"}, description = "get raw string from Channel id")
+    private boolean showRaw = false;
 
     @Override
     public void parse() {
-        if(extraInfo) {
+        if (showRaw) {
+            printInfo(new Fun1<File, String>() {
+                @Override
+                public String apply(File file) {
+                    String rawChannelInfo = PayloadReader.getRawChannelInfo(file);
+                    return rawChannelInfo == null ? "" : rawChannelInfo;
+                }
+            });
+        }
+        if(showExtraInfo) {
             printInfo(new Fun1<File, String>() {
                 @Override
                 public String apply(File file) {
@@ -40,7 +52,7 @@ public class ShowCommand implements IWalleCommand {
             });
             return;
         }
-        if(channel) {
+        if(shoChannel) {
             printInfo(new Fun1<File, String>() {
                 @Override
                 public String apply(File file) {

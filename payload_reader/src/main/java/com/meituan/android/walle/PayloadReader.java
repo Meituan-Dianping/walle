@@ -44,15 +44,11 @@ public class PayloadReader {
      */
     public static Map<String, String> getChannelInfoMap(File apkFile) {
         try {
-            ByteBuffer byteBuffer = get(apkFile, ApkUtil.APK_CHANNEL_BLOCK_ID);
-            if (byteBuffer == null) {
+            String rawString = getRawChannelInfo(apkFile);
+            if (rawString == null) {
                 return null;
             }
-
-            byte[] bytes = getBytes(byteBuffer);
-
-            String channelData = new String(bytes, ApkUtil.DEFAULT_CHARSET);
-            JSONObject jsonObject = new JSONObject(channelData);
+            JSONObject jsonObject = new JSONObject(rawString);
             Iterator keys =  jsonObject.keys();
             Map<String, String> result = new HashMap<>();
             while(keys.hasNext()) {
@@ -60,12 +56,46 @@ public class PayloadReader {
                 result.put(key, jsonObject.getString(key));
             }
             return result;
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return null;
+    }
+    /**
+     * get raw string from channel id
+     *
+     * @param apkFile apk file
+     * @return null if not found
+     */
+    public static String getRawChannelInfo(File apkFile) {
+        byte[] bytes = get(apkFile, ApkUtil.APK_CHANNEL_BLOCK_ID);
+        if (bytes == null) {
+            return null;
+        }
+        try {
+            return new String(bytes, ApkUtil.DEFAULT_CHARSET);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    /**
+     * get bytes by id <br/>
+     *
+     * @param apkFile apk file
+     * @param id id
+     * @return bytes
+     */
+    public static byte[] get(File apkFile, int id) {
+        Map<Integer, ByteBuffer> idValues = getAll(apkFile);
+        if (idValues == null) {
+            return null;
+        }
+        ByteBuffer byteBuffer = idValues.get(id);
+        if (byteBuffer == null) {
+            return null;
+        }
+        return getBytes(byteBuffer);
     }
 
     /**
@@ -73,36 +103,19 @@ public class PayloadReader {
      * @param byteBuffer buffer
      * @return useful data
      */
-    public static byte[] getBytes(ByteBuffer byteBuffer) {
+    private static byte[] getBytes(ByteBuffer byteBuffer) {
         final byte[] array = byteBuffer.array();
         final int arrayOffset = byteBuffer.arrayOffset();
         return Arrays.copyOfRange(array, arrayOffset + byteBuffer.position(),
                 arrayOffset + byteBuffer.limit());
     }
-
-    /**
-     * get custom buffer by id <br/>
-     * Note: get final from byteBuffer, please use {@link PayloadReader#getBytes getBytes}
-     * @param apkFile apk file
-     * @param id id
-     * @return buffer
-     */
-    public static ByteBuffer get(File apkFile, int id) {
-        Map<Integer, ByteBuffer> idValues = getAll(apkFile);
-        if (idValues == null) {
-            return null;
-        }
-        return idValues.get(id);
-    }
-
     /**
      * get all custom (id, buffer) <br/>
-     * NOTE 1: exclude {@link ApkUtil#APK_SIGNATURE_SCHEME_V2_BLOCK_ID APK_SIGNATURE_SCHEME_V2_BLOCK_ID} <br/>
-     * Note 2: get final from byteBuffer, please use {@link PayloadReader#getBytes getBytes}
+     * Note: get final from byteBuffer, please use {@link PayloadReader#getBytes getBytes}
      * @param apkFile apk file
      * @return all custom (id, buffer)
      */
-    public static Map<Integer, ByteBuffer> getAll(File apkFile) {
+    private static Map<Integer, ByteBuffer> getAll(File apkFile) {
         Map<Integer, ByteBuffer> idValues = null;
         try {
             RandomAccessFile randomAccessFile = null;
@@ -116,7 +129,6 @@ public class PayloadReader {
                 }
                 ByteBuffer apkSigningBlock2 = ApkUtil.findApkSigningBlock(fileChannel).getFirst();
                 idValues = ApkUtil.findIdValues(apkSigningBlock2);
-                idValues.remove(ApkUtil.APK_SIGNATURE_SCHEME_V2_BLOCK_ID);
             } catch (IOException ignore) {
             } finally {
                 try {

@@ -14,7 +14,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -22,17 +21,6 @@ import static com.meituan.android.walle.PayloadReader.CHANNEL_KEY;
 
 
 public class PayloadWriter {
-
-    /**
-     * write extra info with channel fixed id
-     * @param apkFile apk file
-     * @param extraInfo extra info (don't use {@link PayloadReader#CHANNEL_KEY PayloadReader.CHANNEL_KEY} as your key)
-     * @return if success
-     */
-    public static boolean putChannelExtraInfo(File apkFile, Map<String,String> extraInfo) {
-        return putChannel(apkFile, null, extraInfo);
-    }
-
     /**
      * write channel with channel fixed id
      * @param apkFile apk file
@@ -46,26 +34,36 @@ public class PayloadWriter {
     /**
      * write channel & extra info with channel fixed id
      * @param apkFile apk file
-     * @param channel channel
+     * @param channel channel （nullable)
      * @param extraInfo extra info (don't use {@link PayloadReader#CHANNEL_KEY PayloadReader.CHANNEL_KEY} as your key)
      * @return if success
-     */
+    */
     public static boolean putChannel(File apkFile, String channel, Map<String,String> extraInfo) {
+        Map<String, String> newData = new HashMap<>();
+        Map<String, String> existsData = PayloadReader.getChannelInfoMap(apkFile);
+        if (existsData != null) {
+            newData.putAll(existsData);
+        }
+        if (extraInfo != null) {
+            extraInfo.remove(CHANNEL_KEY);// can't use
+            newData.putAll(extraInfo);
+        }
+        if (channel != null && channel.length() > 0) {
+            newData.put(CHANNEL_KEY, channel);
+        }
+        JSONObject jsonObject = new JSONObject(newData);
+        return putRawChannelInfo(apkFile, jsonObject.toString());
+    }
+    /**
+     * write custom content with channel fixed id <br/>
+     * NOTE: {@link PayloadReader#getChannelInfo(File)}  and {@link PayloadReader#getChannelInfoMap(File)}  may be affected
+     * @param apkFile apk file
+     * @param string custom content
+     * @return if success
+     */
+    public static boolean putRawChannelInfo(File apkFile, String string) {
         try {
-            Map<String, String> newData = new HashMap<String, String>();
-            Map<String, String> existsData = PayloadReader.getChannelInfoMap(apkFile);
-            if (existsData != null) {
-                newData.putAll(existsData);
-            }
-            if (extraInfo != null) {
-                extraInfo.remove(CHANNEL_KEY);// can't use
-                newData.putAll(extraInfo);
-            }
-            if (channel != null && channel.length() > 0) {
-                newData.put(CHANNEL_KEY, channel);
-            }
-            JSONObject jsonObject = new JSONObject(newData);
-            byte[] bytes = jsonObject.toString().getBytes(ApkUtil.DEFAULT_CHARSET);
+            byte[] bytes = string.getBytes(ApkUtil.DEFAULT_CHARSET);
             ByteBuffer byteBuffer = ByteBuffer.allocate(bytes.length);
             byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
             byteBuffer.put(bytes, 0, bytes.length);
@@ -76,7 +74,27 @@ public class PayloadWriter {
         }
         return false;
     }
-
+    /**
+     * remove channel id content
+     * @param apkFile apk file
+     * @return if success
+     */
+    public static boolean removeChannel(File apkFile) {
+        return handleApkSigningBlock(apkFile, new ApkSigningBlockHandler() {
+            @Override
+            public ApkSigningBlock handle(Map<Integer, ByteBuffer> originIdValues) {
+                ApkSigningBlock apkSigningBlock = new ApkSigningBlock();
+                Set<Map.Entry<Integer, ByteBuffer>> entrySet = originIdValues.entrySet();
+                for (Map.Entry<Integer, ByteBuffer> entry : entrySet) {
+                    if (entry.getKey() != ApkUtil.APK_CHANNEL_BLOCK_ID) {
+                        ApkSigningPayload payload = new ApkSigningPayload(entry.getKey(), entry.getValue());
+                        apkSigningBlock.addPayload(payload);
+                    }
+                }
+                return apkSigningBlock;
+            }
+        });
+    }
     /**
      * put (id, buffer) into apk, update if id exists
      * @param apkFile  apk file
@@ -85,43 +103,40 @@ public class PayloadWriter {
      * @return if success
      */
     public static boolean put(File apkFile, int id, ByteBuffer buffer) {
-        Map<Integer, ByteBuffer> idValues = PayloadReader.getAll(apkFile);
-        if (idValues == null) {
-            return replaceAll(apkFile, id, buffer);
-        }
-
+        Map<Integer, ByteBuffer> idValues = new HashMap<>();
         idValues.put(id, buffer);
-        return replaceAll(apkFile, idValues);
+        return putAll(apkFile, idValues);
     }
     /**
-     * Replace all existing idValues with new (id, buffer) (exclude {@link ApkUtil#APK_SIGNATURE_SCHEME_V2_BLOCK_ID APK_SIGNATURE_SCHEME_V2_BLOCK_ID})
-     * @param apkFile apk file
-     * @param id id
-     * @param buffer value
-     * @return if success
-     */
-    public static boolean replaceAll(File apkFile, int id, ByteBuffer buffer) {
-        Map<Integer, ByteBuffer> idValues = new HashMap<Integer, ByteBuffer>();
-        idValues.put(id, buffer);
-        return replaceAll(apkFile, idValues);
-    }
-
-    /**
-     * remove all custom idValues
-     * @param apkFile apk file
-     * @return if success
-     */
-    public static boolean removeAll(File apkFile) {
-        return replaceAll(apkFile, null);
-    }
-    /**
-     * Replace all existing idValues with new idValues (exclude {@link ApkUtil#APK_SIGNATURE_SCHEME_V2_BLOCK_ID APK_SIGNATURE_SCHEME_V2_BLOCK_ID})
+     * put new idValues into apk, update if id exists
      *
      * @param apkFile apk file
-     * @param idValues id value
+     * @param idValues id value. NOTE: use unknown IDs. DO NOT use ID that have already been used.  See <a href='https://source.android.com/security/apksigning/v2.html'>APK Signature Scheme v2</a>
      * @return if success
      */
-    public static boolean replaceAll(File apkFile, Map<Integer, ByteBuffer> idValues) {
+    public static boolean putAll(File apkFile, final Map<Integer, ByteBuffer> idValues) {
+        return handleApkSigningBlock(apkFile, new ApkSigningBlockHandler() {
+            @Override
+            public ApkSigningBlock handle(Map<Integer, ByteBuffer> originIdValues) {
+                if (idValues != null && !idValues.isEmpty()) {
+                    originIdValues.putAll(idValues);
+                }
+                ApkSigningBlock apkSigningBlock = new ApkSigningBlock();
+                Set<Map.Entry<Integer, ByteBuffer>> entrySet = originIdValues.entrySet();
+                for (Map.Entry<Integer, ByteBuffer> entry : entrySet) {
+                    ApkSigningPayload payload = new ApkSigningPayload(entry.getKey(), entry.getValue());
+                    apkSigningBlock.addPayload(payload);
+                }
+                return apkSigningBlock;
+            }
+        });
+    }
+
+    private interface ApkSigningBlockHandler {
+        ApkSigningBlock handle(Map<Integer, ByteBuffer> originIdValues);
+    }
+
+    private static boolean handleApkSigningBlock(File apkFile, ApkSigningBlockHandler handler) {
         RandomAccessFile fIn = null;
         FileChannel fileChannel = null;
         try {
@@ -147,19 +162,8 @@ public class PayloadWriter {
                         "No APK Signature Scheme v2 block in APK Signing Block");
             }
 
-            ApkSigningBlock apkSigningBlock = new ApkSigningBlock();
-            ApkSigningPayload payload = new ApkSigningPayload(ApkUtil.APK_SIGNATURE_SCHEME_V2_BLOCK_ID, apkSignatureSchemeV2Block);
-            apkSigningBlock.addPayload(payload);
 
-            if (idValues != null && !idValues.isEmpty()) {
-                Set<Map.Entry<Integer, ByteBuffer>> entrySet = idValues.entrySet();
-                Iterator<Map.Entry<Integer, ByteBuffer>> iterator = entrySet.iterator();
-                while (iterator.hasNext()) {
-                    Map.Entry<Integer, ByteBuffer> entry = iterator.next();
-                    payload = new ApkSigningPayload(entry.getKey(), entry.getValue());
-                    apkSigningBlock.addPayload(payload);
-                }
-            }
+            ApkSigningBlock apkSigningBlock = handler.handle(originIdValues);
 
             if (apkSigningBlockOffset != 0 && centralDirStartOffset != 0) {
 

@@ -5,7 +5,7 @@ import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class ApkUtil {
@@ -142,7 +142,7 @@ public class ApkUtil {
         // * @-16 bytes uint128:   magic
         ByteBuffer pairs = sliceFromTo(apkSigningBlock, 8, apkSigningBlock.capacity() - 24);
 
-        Map<Integer, ByteBuffer> idValues = new HashMap<Integer, ByteBuffer>();
+        Map<Integer, ByteBuffer> idValues = new LinkedHashMap<>(); // keep order
 
         int entryCount = 0;
         while (pairs.hasRemaining()) {
