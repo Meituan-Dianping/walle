@@ -103,7 +103,7 @@ public class PayloadReader {
      * @param byteBuffer buffer
      * @return useful data
      */
-    public static byte[] getBytes(ByteBuffer byteBuffer) {
+    private static byte[] getBytes(ByteBuffer byteBuffer) {
         final byte[] array = byteBuffer.array();
         final int arrayOffset = byteBuffer.arrayOffset();
         return Arrays.copyOfRange(array, arrayOffset + byteBuffer.position(),
