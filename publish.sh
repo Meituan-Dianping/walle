@@ -1,5 +1,5 @@
 # 生成cli
-./gradlew ::walle-cli:clean :walle-cli:shadowJar
+./gradlew :walle-cli:clean :walle-cli:shadowJar
 cp walle-cli/build/libs/walle-cli-all.jar walle-cli/walle-cli-all.jar
 # 替换readme中的版本
 VERSION_NAME=`grep VERSION_NAME gradle.properties`
@@ -12,6 +12,6 @@ done
 git add .
 git commit -m "update cli.jar & readme"
 # upload jar & aar
-./gradlew clean install
+./gradlew clean uploadArchives
 # git tag
-#git tag v$VERSION_STRING
+git tag v$VERSION_STRING
