@@ -10,6 +10,7 @@ Android N推出 [APK Signature Scheme v2](https://source.android.com/security/ap
 # 注意事项
 * Android Gradle Plugin的版本必须是2.2.0或者更高
 * APK的签名必须 `v2SigningEnabled＝true`
+* 使用apksigner重新对apk签名会导致渠道信息丢失，需要再次写入渠道信息
 
 # 使用说明
 ## 基础使用
