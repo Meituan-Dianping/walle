@@ -20,7 +20,7 @@ Android N推出 [APK Signature Scheme v2](https://source.android.com/security/ap
 ```gradle
 buildscript {
     dependencies {
-        classpath 'com.meituan.android.walle:plugin:0.1.0'
+        classpath 'com.meituan.android.walle:plugin:0.1.0
     }
 }
 ```
@@ -33,7 +33,7 @@ buildscript {
 apply plugin: 'walle'
 
 dependencies {
-    compile 'com.meituan.android.walle:library:0.1.0'
+    compile 'com.meituan.android.walle:library:0.1.0
 }
 ```
 
