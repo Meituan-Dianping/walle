@@ -1,4 +1,3 @@
-## Walle
 
 Walle(瓦力)：支持Android Signature V2 Scheme签名的的渠道包打包神器，Android N推出了 [APK Signature Scheme v2](https://source.android.com/security/apksigning/v2.html)， 是我们之前的渠道打包方式都失效了，这里我们另辟蹊径找到一种简单快速的渠道包声称方式。
 
