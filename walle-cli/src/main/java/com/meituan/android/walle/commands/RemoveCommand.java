@@ -3,10 +3,12 @@ package com.meituan.android.walle.commands;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.beust.jcommander.converters.FileConverter;
-import com.meituan.android.walle.PayloadWriter;
+import com.meituan.android.walle.ChannelWriter;
+import com.meituan.android.walle.internal.SignatureNotFoundException;
 import com.meituan.android.walle.utils.Fun1;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 
@@ -21,7 +23,13 @@ public class RemoveCommand implements IWalleCommand {
         removeInfo(new Fun1<File, Boolean>() {
             @Override
             public Boolean apply(File file) {
-                return PayloadWriter.removeChannel(file);
+                try {
+                    ChannelWriter.remove(file);
+                    return true;
+                } catch (IOException | SignatureNotFoundException e) {
+                    e.printStackTrace();
+                }
+                return false;
             }
         });
     }

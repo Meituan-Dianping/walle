@@ -3,82 +3,16 @@ package com.meituan.android.walle;
 import com.meituan.android.walle.internal.ApkUtil;
 import com.meituan.android.walle.internal.SignatureNotFoundException;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 
 public class PayloadReader {
-    public static final String CHANNEL_KEY = "channel";
-
-    /**
-     * easy api for get channel & extra info.<br/>
-     * pair first: channel <br/>
-     * pair second: extra info
-     * @param apkFile apk file
-     * @return null if not found
-     */
-    public static ChannelInfo getChannelInfo(File apkFile) {
-        Map<String, String> result = getChannelInfoMap(apkFile);
-        if (result == null) {
-            return null;
-        }
-        String channel = result.get(CHANNEL_KEY);
-        result.remove(CHANNEL_KEY);
-        return new ChannelInfo(channel, result);
-    }
-    /**
-     * get channel & extra info by map, use {@link PayloadReader#CHANNEL_KEY PayloadReader.CHANNEL_KEY} get channel
-     * @param apkFile apk file
-     * @return null if not found
-     */
-    public static Map<String, String> getChannelInfoMap(File apkFile) {
-        try {
-            String rawString = getRawChannelInfo(apkFile);
-            if (rawString == null) {
-                return null;
-            }
-            JSONObject jsonObject = new JSONObject(rawString);
-            Iterator keys =  jsonObject.keys();
-            Map<String, String> result = new HashMap<>();
-            while(keys.hasNext()) {
-                String key = keys.next().toString();
-                result.put(key, jsonObject.getString(key));
-            }
-            return result;
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-    /**
-     * get raw string from channel id
-     *
-     * @param apkFile apk file
-     * @return null if not found
-     */
-    public static String getRawChannelInfo(File apkFile) {
-        byte[] bytes = get(apkFile, ApkUtil.APK_CHANNEL_BLOCK_ID);
-        if (bytes == null) {
-            return null;
-        }
-        try {
-            return new String(bytes, ApkUtil.DEFAULT_CHARSET);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
     /**
      * get bytes by id <br/>
      *

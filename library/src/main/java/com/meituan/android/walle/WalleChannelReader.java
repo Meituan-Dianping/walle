@@ -9,8 +9,12 @@ import android.text.TextUtils;
 import java.io.File;
 import java.util.Map;
 
-public class ChannelReader {
-
+public class WalleChannelReader {
+    /**
+     * get channel
+     * @param context context
+     * @return channel, null if not fount
+     */
     @Nullable
     public static String getChannel(@NonNull Context context) {
         ChannelInfo channelInfo = getChannelInfo(context);
@@ -20,15 +24,26 @@ public class ChannelReader {
         return channelInfo.getChannel();
     }
 
+    /**
+     * get channel info (include channle & extraInfo)
+     * @param context context
+     * @return channel info
+     */
     @Nullable
     public static ChannelInfo getChannelInfo(@NonNull Context context) {
         String apkPath = getApkPath(context);
         if (TextUtils.isEmpty(apkPath)) {
             return null;
         }
-        return PayloadReader.getChannelInfo(new File(apkPath));
+        return ChannelReader.get(new File(apkPath));
     }
 
+    /**
+     * get value by key
+     * @param context context
+     * @param key the key you store
+     * @return value
+     */
     @Nullable
     public static String get(@NonNull Context context, @NonNull String key) {
         Map<String, String> channelMap = getChannelInfoMap(context);
@@ -38,13 +53,18 @@ public class ChannelReader {
         return channelMap.get(key);
     }
 
+    /**
+     * get all channl info with map
+     * @param context context
+     * @return map
+     */
     @Nullable
     public static Map<String, String> getChannelInfoMap(@NonNull Context context) {
         String apkPath = getApkPath(context);
         if (TextUtils.isEmpty(apkPath)) {
             return null;
         }
-        return PayloadReader.getChannelInfoMap(new File(apkPath));
+        return ChannelReader.getMap(new File(apkPath));
     }
 
     @Nullable
