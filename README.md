@@ -6,21 +6,21 @@ Android N推出 [APK Signature Scheme v2](https://source.android.com/security/ap
 
 ![walle.png](assets/walle.png)
 
-# 原理介绍
+## 原理介绍
 [美团Android新一代渠道包生成工具](http://tech.meituan.com/android-apk-v2-signature-scheme.html)
 
-# 注意事项
+## 注意事项
 * Android Gradle Plugin的版本必须是2.2.0或者更高
 * APK的签名必须 `v2SigningEnabled＝true`
 * 使用apksigner重新对apk签名会导致渠道信息丢失，需要再次写入渠道信息
 
-# 使用说明
-## 基础使用
-### 根项目的build.gradle配置
+## 使用说明
+### 基础使用
+#### 根项目的build.gradle配置
 
 在位于项目的根目录 `build.gradle` 文件中添加Walle Gradle插件的依赖， 如下：
 
-```gradle
+```groovy
 buildscript {
     dependencies {
         classpath 'com.meituan.android.walle:plugin:0.1.0
@@ -28,11 +28,11 @@ buildscript {
 }
 ```
 
-### App的build.gradle配置
+#### App的build.gradle配置
 
 并在当前App的 `build.gradle` 文件中apply这个插件，并添加上用于读取渠道号的AAR
 
-```gradle
+```groovy
 apply plugin: 'walle'
 
 dependencies {
@@ -40,11 +40,11 @@ dependencies {
 }
 ```
 
-### 生成渠道包
+#### 生成渠道包
 
 与原assemble指令结合，通过传入参数决定是否生成渠道包
 
-#### 单个渠道生成
+##### 单个渠道生成
 
 ```
 ./gradlew clean assembleRelease -PchannelList=meituan
@@ -56,13 +56,13 @@ dependencies {
 ./gradlew clean assembleMeituanRelease -PchannelList=meituan
 ```
 
-#### 多个渠道生成
+##### 多个渠道生成
 
 ```
 ./gradlew clean assembleRelease -PchannelList=meituan,dianping
 ```
 
-#### 使用渠道配置文件
+##### 使用渠道配置文件
 
 ```
 ./gradlew clean assembleRelease -PchannelFile=channel
@@ -72,11 +72,11 @@ dependencies {
 
 [配置文件示例](app/channel)   支持使用#号添加注释
 
-#### 渠道包输出目录
+##### 渠道包输出目录
 
 build/outputs/apk/
 
-### 获取渠道信息
+#### 获取渠道信息
 
 在需要渠道等信息时可以通过下面代码进行获取
 
@@ -84,9 +84,9 @@ build/outputs/apk/
 String channel = WalleChannelReader.getChannel(this.getApplicationContext());
 ```
 
-## 更多用法
+### 更多用法
 
-### 插入额外信息
+#### 插入额外信息
 
 如果想插入除渠道以外的其他信息，请在生成渠道包时使用
 
@@ -103,7 +103,7 @@ extraInfo以`key:value`形式提供，多个以`,`分隔。
 
 获取：
 
-```
+```java
 ChannelInfo channelInfo= WalleChannelReader.getChannelInfo(this.getApplicationContext());
 if (channelInfo != null) {
    String channel = channelInfo.getChannel();
@@ -113,32 +113,32 @@ if (channelInfo != null) {
 String value = WalleChannelReader.get(context, "buildtime");
 ```
 
-### 命令行工具
+#### 命令行工具
 
 [Walle CLI 使用说明](walle-cli/README.md)
 
-### 读写Jar包提供
+#### 读写Jar包提供
 
 [读取信息:  payload_reader](payload_reader/README.md)
 
 [写入信息: payload_writer](payload_writer/README.md)
 
-# 技术支持
+## 技术支持
 
 1. Read The Fucking Source Code
 2. 通过提交issue来寻求帮助
 3. 联系我们寻求帮助
 
-# 贡献代码
+## 贡献代码
 * 欢迎提交issue
 * 欢迎提交PR
 
-# 参考
+## 参考
 * [APK Signature Scheme v2](https://source.android.com/security/apksigning/v2.html)
 * [Zip Format](https://en.wikipedia.org/wiki/Zip_(file_format))
 * [Android Source Code: ApkSigner](https://android.googlesource.com/platform/build/+/8740e9d)
 
-# License
+## License
 
     Copyright 2017 Meituan-Dianping
 
