@@ -1,5 +1,5 @@
 apply plugin: 'com.github.dcendents.android-maven'
-
+apply plugin: 'com.jfrog.bintray'
 group = GROUP
 version = VERSION_NAME
 
@@ -46,5 +46,20 @@ uploadArchives {
         repository(url: repositoryUrl) {
             authentication(userName: getPropertyFromLocalProperties("USER"), password: getPropertyFromLocalProperties("PASSWORD"))
         }
+    }
+}
+
+bintray {
+    user = getPropertyFromLocalProperties("bintray.user")
+    key = getPropertyFromLocalProperties("bintray.apikey")
+    configurations = ['archives']
+    pkg {
+        repo = 'maven'
+        name = "${project.group}:${project.name}"
+        userOrg = user
+        licenses = ['Apache-2.0']
+        websiteUrl = ''
+        vcsUrl = ''
+        publish = true
     }
 }
