@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # 生成cli
 ./gradlew :walle-cli:clean :walle-cli:shadowJar
 cp walle-cli/build/libs/walle-cli-all.jar walle-cli/walle-cli-all.jar
