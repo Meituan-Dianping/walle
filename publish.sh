@@ -14,6 +14,6 @@ done
 git add .
 git commit -m "update cli.jar & readme"
 # upload jar & aar
-#./gradlew clean uploadArchives
+./gradlew clean uploadArchives
 # git tag
 git tag v$VERSION_STRING
