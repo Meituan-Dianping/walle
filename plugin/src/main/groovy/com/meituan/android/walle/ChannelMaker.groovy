@@ -19,7 +19,7 @@ class ChannelMaker extends DefaultTask {
     private static final String DOT_APK = ".apk";
 
     public BaseVariant variant;
-    public Project project;
+    public Project targetProject;
     public File apkFile;
 
     public void setup() {
@@ -27,35 +27,84 @@ class ChannelMaker extends DefaultTask {
         group "Package"
     }
 
+    private static final String PROPERTY_CHANNEL_FILE = 'channelFile'
+    private static final String PROPERTY_CHANNEL_LIST = 'channelList'
+    private static final String PROPERTY_EXTRA_INFO = 'extraInfo'
     @TaskAction
     public void packaging() {
+        boolean hasChannelList = targetProject.hasProperty(PROPERTY_CHANNEL_LIST)
+        boolean hasChannelFile = targetProject.hasProperty(PROPERTY_CHANNEL_FILE)
+        boolean hasExtraInfo = targetProject.hasProperty(PROPERTY_EXTRA_INFO)
+        if (!hasChannelFile && !hasChannelList) {
+            return;
+        }
         if (apkFile == null || !apkFile.exists()) {
             throw new GradleException("${apkFile} is not existed!");
         }
 
-        String channel = (variant.flavorName != null && variant.flavorName.length() > 0) ? variant.flavorName : 'undefined'
-        Map<String, String> extraInfo = new HashMap<>()
-        extraInfo.put("buildType", variant.buildType.name)
-        extraInfo.put("timestamp", "" + System.currentTimeMillis())
-
         checkV2Signature()
 
-        String apkFileName = apkFile.getName();
-        if (apkFileName.endsWith(DOT_APK)) {
-            apkFileName = apkFileName.substring(0, apkFileName.lastIndexOf(DOT_APK));
-        }
-        File channelApkFile = new File("${apkFileName}-${channel}${DOT_APK}", apkFile.parentFile);
 
+        def channelList = new ArrayList<String>()
+
+        if(hasChannelList){
+            def channelListProperty = targetProject.getProperties().get(PROPERTY_CHANNEL_LIST)
+            if (channelListProperty != null && channelListProperty.length() != 0) {
+                channelList.addAll(channelListProperty.split(",").collect{it.trim()})
+            }
+        }
+        if (hasChannelFile) {
+            def channelFileProperty = targetProject.getProperties().get(PROPERTY_CHANNEL_FILE)
+            channelList.addAll(getChannelListFromFile(channelFileProperty))
+        }
+        def extraInfo = null
+        if (hasExtraInfo) {
+            def keyValues = targetProject.getProperties().get(PROPERTY_EXTRA_INFO).split(",").collect{it.trim()}
+            extraInfo = keyValues.findAll{it.split(":").size() == 2}.collectEntries ( [:] ) { keyValue ->
+                def data = keyValue.split(":")
+                [data[0], data[1]]
+            }
+        }
         long startTime = System.currentTimeMillis();
 
-        FileUtils.copyFile(apkFile, channelApkFile);
-        PayloadWriter.putChannel(channelApkFile, channel, extraInfo)
+        channelList.each {channel -> generateChannelApk(channel, extraInfo)}
 
         println "APK Signature Scheme v2 Channel Maker takes about " + (System.currentTimeMillis() - startTime) + " milliseconds";
 
     }
 
-    private void checkV2Signature() {
+    static def getChannelListFromFile(channelFileProperty) {
+        def channelList = []
+        if (channelFileProperty == null || channelFileProperty.length() == 0) {
+            return channelList
+        }
+        def channelFile = new File(channelFileProperty.trim())
+
+        if (!channelFile.exists()) {
+            println "channel file does not exist"
+            return channelList
+        } else {
+            channelFile.eachLine { line ->
+                if( line.trim() ) {
+                    def channel = line.split('#').first().trim()
+                    channelList.add(channel)
+                }
+            }
+        }
+        return channelList
+    }
+
+    def generateChannelApk(channel, extraInfo) {
+        String apkFileName = apkFile.getName();
+        if (apkFileName.endsWith(DOT_APK)) {
+            apkFileName = apkFileName.substring(0, apkFileName.lastIndexOf(DOT_APK));
+        }
+        File channelApkFile = new File("${apkFileName}-${channel}${DOT_APK}", apkFile.parentFile);
+        FileUtils.copyFile(apkFile, channelApkFile);
+        ChannelWriter.put(channelApkFile, channel, extraInfo)
+    }
+
+    def checkV2Signature() {
         FileInputStream fIn;
         FileChannel fChan;
         try {

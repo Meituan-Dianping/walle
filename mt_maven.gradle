@@ -11,6 +11,26 @@ def isSnapshot() {
     return version.endsWith("SNAPSHOT");
 }
 
+def hasAndroidPlugin() {
+    return getPlugins().inject(false) { a, b->
+            def classStr = b.getClass().name
+            def isAndroid = ("com.android.build.gradle.LibraryPlugin" == classStr) || ("com.android.build.gradle.AppPlugin" == classStr)
+            a || isAndroid
+        }
+}
+task sourcesJar(type: Jar) {
+    if (hasAndroidPlugin()) {
+        from android.sourceSets.main.java.srcDirs
+        classifier = 'sources'
+    } else {
+        from sourceSets.main.allSource
+        classifier = 'sources'
+    }
+}
+artifacts {
+    archives sourcesJar
+}
+
 def nexusUser = ""
 def nexusPassword = ""
 File file = project.rootProject.file('local.properties');

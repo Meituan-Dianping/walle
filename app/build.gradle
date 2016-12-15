@@ -10,7 +10,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.2.0'
-        classpath "com.meituan.android.walle:plugin:0.0.5"
+        classpath "com.meituan.android.walle:plugin:latest.integration"
     }
 }
 
@@ -52,7 +52,12 @@ android {
             signingConfig signingConfigs.sankuai
         }
     }
-
+//    productFlavors {
+//        meituan {
+//            applicationId "com.example.myapp.full"
+//            versionName "1.0-full"
+//        }
+//    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7

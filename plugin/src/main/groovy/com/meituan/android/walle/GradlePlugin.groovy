@@ -21,8 +21,6 @@ class GradlePlugin implements org.gradle.api.Plugin<Project> {
             throw new ProjectConfigurationException("Plugin requires the 'com.android.tools.build:gradle' version 2.2.0 or above to be configured.", null);
         }
 
-        applyExtension(project);
-
         applyTask(project);
     }
 
@@ -37,7 +35,7 @@ class GradlePlugin implements org.gradle.api.Plugin<Project> {
 
                 ChannelMaker channelMaker = project.tasks.create("assemble${variantName}V2SignatureSchemeChannel", ChannelMaker);
                 def File apkFile = variant.outputs[0].outputFile
-                channelMaker.project = project;
+                channelMaker.targetProject = project;
                 channelMaker.variant = variant;
                 channelMaker.apkFile = apkFile;
                 channelMaker.setup();
@@ -100,25 +98,5 @@ class GradlePlugin implements org.gradle.api.Plugin<Project> {
         else {
             return Integer.signum(vals1.length - vals2.length);
         }
-    }
-
-    void applyExtension(Project project) {
-        project.extensions.create(sPluginExtensionName, Extension);
-    }
-
-    public static class Extension {
-
-        Extension() {
-        }
-
-        public static Extension getConfig(Project project) {
-            Extension config =
-                    project.getExtensions().findByType(Extension.class);
-            if (config == null) {
-                config = new Extension();
-            }
-            return config;
-        }
-
     }
 }

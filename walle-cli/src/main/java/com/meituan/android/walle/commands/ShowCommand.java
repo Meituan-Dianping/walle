@@ -4,7 +4,7 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.beust.jcommander.converters.FileConverter;
 import com.meituan.android.walle.ChannelInfo;
-import com.meituan.android.walle.PayloadReader;
+import com.meituan.android.walle.ChannelReader;
 import com.meituan.android.walle.utils.Fun1;
 
 import java.io.File;
@@ -33,7 +33,7 @@ public class ShowCommand implements IWalleCommand {
             printInfo(new Fun1<File, String>() {
                 @Override
                 public String apply(File file) {
-                    String rawChannelInfo = PayloadReader.getRawChannelInfo(file);
+                    String rawChannelInfo = ChannelReader.getRaw(file);
                     return rawChannelInfo == null ? "" : rawChannelInfo;
                 }
             });
@@ -42,7 +42,7 @@ public class ShowCommand implements IWalleCommand {
             printInfo(new Fun1<File, String>() {
                 @Override
                 public String apply(File file) {
-                    ChannelInfo channelInfo = PayloadReader.getChannelInfo(file);
+                    ChannelInfo channelInfo = ChannelReader.get(file);
                     if (channelInfo == null) {
                         return "";
                     }
@@ -56,7 +56,7 @@ public class ShowCommand implements IWalleCommand {
             printInfo(new Fun1<File, String>() {
                 @Override
                 public String apply(File file) {
-                    ChannelInfo channelInfo = PayloadReader.getChannelInfo(file);
+                    ChannelInfo channelInfo = ChannelReader.get(file);
                     if (channelInfo == null) {
                         return "";
                     }
@@ -68,7 +68,7 @@ public class ShowCommand implements IWalleCommand {
         printInfo(new Fun1<File, String>() {
             @Override
             public String apply(File file) {
-                Map<String, String> map = PayloadReader.getChannelInfoMap(file);
+                Map<String, String> map = ChannelReader.getMap(file);
                 return map == null ? "" : map.toString();
             }
         });

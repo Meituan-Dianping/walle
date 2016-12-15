@@ -3,7 +3,8 @@ package com.meituan.android.walle.commands;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.beust.jcommander.converters.FileConverter;
-import com.meituan.android.walle.PayloadWriter;
+import com.meituan.android.walle.ChannelWriter;
+import com.meituan.android.walle.internal.SignatureNotFoundException;
 import com.meituan.android.walle.utils.CommaSeparatedKeyValueConverter;
 
 import org.apache.commons.io.FileUtils;
@@ -39,12 +40,16 @@ public class WriteChannelCommand implements IWalleCommand{
             outputFile = new File(inputFile.getParent(), newName);
         }
         if (inputFile.equals(outputFile)) {
-            PayloadWriter.putChannel(outputFile, channel, extraInfo);
+            try {
+                ChannelWriter.put(outputFile, channel, extraInfo);
+            } catch (IOException | SignatureNotFoundException e) {
+                e.printStackTrace();
+            }
         } else {
             try {
                 FileUtils.copyFile(inputFile, outputFile);
-                PayloadWriter.putChannel(outputFile, channel, extraInfo);
-            } catch (IOException e) {
+                ChannelWriter.put(outputFile, channel, extraInfo);
+            } catch (IOException | SignatureNotFoundException e) {
                 e.printStackTrace();
             }
         }
