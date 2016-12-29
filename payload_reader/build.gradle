@@ -3,7 +3,7 @@ apply from: rootProject.file("mt_maven.gradle")
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compileOnly 'com.google.android:android:4.1.1.4'//provide org.json
+    compileOnly 'org.json:json:20080701'//提供org.json环境，开发时注意与Android org.json api兼容
 }
 
 sourceCompatibility = javaVersion
