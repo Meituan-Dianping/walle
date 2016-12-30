@@ -37,7 +37,7 @@ public class ChannelWriter {
      * @throws SignatureNotFoundException
      */
     public static void put(File apkFile, String channel, Map<String, String> extraInfo) throws IOException, SignatureNotFoundException {
-        Map<String, String> newData = new HashMap<>();
+        Map<String, String> newData = new HashMap<String, String>();
         Map<String, String> existsData = ChannelReader.getMap(apkFile);
         if (existsData != null) {
             newData.putAll(existsData);

@@ -142,7 +142,7 @@ public class ApkUtil {
         // * @-16 bytes uint128:   magic
         ByteBuffer pairs = sliceFromTo(apkSigningBlock, 8, apkSigningBlock.capacity() - 24);
 
-        Map<Integer, ByteBuffer> idValues = new LinkedHashMap<>(); // keep order
+        Map<Integer, ByteBuffer> idValues = new LinkedHashMap<Integer, ByteBuffer>(); // keep order
 
         int entryCount = 0;
         while (pairs.hasRemaining()) {

@@ -37,7 +37,7 @@ public class ApkSigningBlock {
     ApkSigningBlock() {
         super();
 
-        payloads = new ArrayList<>();
+        payloads = new ArrayList<ApkSigningPayload>();
     }
 
     public final List<ApkSigningPayload> getPayloads() {

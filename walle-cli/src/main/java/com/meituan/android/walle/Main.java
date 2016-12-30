@@ -17,7 +17,7 @@ import java.util.Map;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        Map<String, IWalleCommand> subCommandList = new HashMap<>();
+        Map<String, IWalleCommand> subCommandList = new HashMap<String, IWalleCommand>();
         subCommandList.put("show", new ShowCommand());
         subCommandList.put("rm", new RemoveCommand());
         subCommandList.put("put", new WriteChannelCommand());
