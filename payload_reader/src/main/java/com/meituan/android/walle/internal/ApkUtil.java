@@ -9,13 +9,25 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class ApkUtil {
+    /**
+     * APK Signing Block Magic Code: magic “APK Sig Block 42” (16 bytes)
+     * "APK Sig Block 42" : 41 50 4B 20 53 69 67 20 42 6C 6F 63 6B 20 34 32 (LITTLE_ENDIAN)
+     */
     public static final long APK_SIG_BLOCK_MAGIC_HI = 0x3234206b636f6c42L;
     public static final long APK_SIG_BLOCK_MAGIC_LO = 0x20676953204b5041L;
+    private static final int APK_SIG_BLOCK_MIN_SIZE = 32;
+
+    /*
+     The v2 signature of the APK is stored as an ID-value pair with ID 0x7109871a
+     (https://source.android.com/security/apksigning/v2.html#apk-signing-block)
+      */
     public static final int APK_SIGNATURE_SCHEME_V2_BLOCK_ID = 0x7109871a;
+
+    // Our Channel Block ID
     public static final int APK_CHANNEL_BLOCK_ID = 0x71777777;
+
     public static final String DEFAULT_CHARSET = "UTF-8";
 
-    private static final int APK_SIG_BLOCK_MIN_SIZE = 32;
     /**
      * check zip comment
      * @param fileChannel fileChannel
