@@ -11,10 +11,10 @@ import java.util.Map;
 public class ApkUtil {
     /**
      * APK Signing Block Magic Code: magic “APK Sig Block 42” (16 bytes)
-     * "APK Sig Block 42" : 41 50 4B 20 53 69 67 20 42 6C 6F 63 6B 20 34 32 (LITTLE_ENDIAN)
+     * "APK Sig Block 42" : 41 50 4B 20 53 69 67 20 42 6C 6F 63 6B 20 34 32
      */
-    public static final long APK_SIG_BLOCK_MAGIC_HI = 0x3234206b636f6c42L;
-    public static final long APK_SIG_BLOCK_MAGIC_LO = 0x20676953204b5041L;
+    public static final long APK_SIG_BLOCK_MAGIC_HI = 0x3234206b636f6c42L; // LITTLE_ENDIAN, High
+    public static final long APK_SIG_BLOCK_MAGIC_LO = 0x20676953204b5041L; // LITTLE_ENDIAN, Low
     private static final int APK_SIG_BLOCK_MIN_SIZE = 32;
 
     /*
