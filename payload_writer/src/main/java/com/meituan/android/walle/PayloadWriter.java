@@ -26,7 +26,7 @@ public class PayloadWriter {
      * @throws SignatureNotFoundException
      */
     public static void put(File apkFile, int id, ByteBuffer buffer) throws IOException, SignatureNotFoundException {
-        Map<Integer, ByteBuffer> idValues = new HashMap<>();
+        Map<Integer, ByteBuffer> idValues = new HashMap<Integer, ByteBuffer>();
         idValues.put(id, buffer);
         putAll(apkFile, idValues);
     }

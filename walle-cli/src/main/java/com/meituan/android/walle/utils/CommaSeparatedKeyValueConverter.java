@@ -15,7 +15,7 @@ public class CommaSeparatedKeyValueConverter implements IStringConverter<Map<Str
         Map<String, String> result = null;
         if (!Util.isTextEmpty(value)) {
             String[] temp = value.split(",");
-            result = new HashMap<>(temp.length);
+            result = new HashMap<String, String>(temp.length);
             for (String s : temp) {
                 String[] keyValue = s.split("=");
                 if (keyValue.length == 2) {
