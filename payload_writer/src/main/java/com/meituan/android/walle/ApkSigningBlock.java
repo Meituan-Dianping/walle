@@ -1,7 +1,5 @@
 package com.meituan.android.walle;
 
-import com.meituan.android.walle.internal.ApkUtil;
-
 import java.io.DataOutput;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -13,7 +11,7 @@ import java.util.List;
  * https://source.android.com/security/apksigning/v2.html
  * https://en.wikipedia.org/wiki/Zip_(file_format)
  */
-public class ApkSigningBlock {
+class ApkSigningBlock {
     // The format of the APK Signing Block is as follows (all numeric fields are little-endian):
 
     // .size of block in bytes (excluding this field) (uint64)

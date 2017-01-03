@@ -1,4 +1,4 @@
-package com.meituan.android.walle.internal;
+package com.meituan.android.walle;
 
 import java.io.IOException;
 import java.nio.BufferUnderflowException;
@@ -8,7 +8,11 @@ import java.nio.channels.FileChannel;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class ApkUtil {
+class ApkUtil {
+    private ApkUtil() {
+        super();
+    }
+
     /**
      * APK Signing Block Magic Code: magic “APK Sig Block 42” (16 bytes)
      * "APK Sig Block 42" : 41 50 4B 20 53 69 67 20 42 6C 6F 63 6B 20 34 32
@@ -30,6 +34,7 @@ public class ApkUtil {
 
     /**
      * check zip comment
+     *
      * @param fileChannel fileChannel
      * @return true if has comment
      * @throws IOException
@@ -84,11 +89,13 @@ public class ApkUtil {
         long centralDirStartOffset = zipEndOfCentralDirectory.getInt(0);
         return centralDirStartOffset;
     }
+
     public static Pair<ByteBuffer, Long> findApkSigningBlock(
             FileChannel fileChannel) throws IOException, SignatureNotFoundException {
         long centralDirOffset = findCentralDirStartOffset(fileChannel);
         return findApkSigningBlock(fileChannel, centralDirOffset);
     }
+
     public static Pair<ByteBuffer, Long> findApkSigningBlock(
             FileChannel fileChannel, long centralDirOffset) throws IOException, SignatureNotFoundException {
 

@@ -1,4 +1,4 @@
-package com.meituan.android.walle.internal;
+package com.meituan.android.walle;
 
 
 public class SignatureNotFoundException extends Exception {

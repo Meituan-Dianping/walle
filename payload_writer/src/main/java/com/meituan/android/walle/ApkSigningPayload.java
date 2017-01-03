@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 
-public class ApkSigningPayload {
+class ApkSigningPayload {
     private final int id;
     private final ByteBuffer buffer;
 

@@ -1,8 +1,5 @@
 package com.meituan.android.walle;
 
-import com.meituan.android.walle.internal.ApkUtil;
-import com.meituan.android.walle.internal.SignatureNotFoundException;
-
 import org.json.JSONObject;
 
 import java.io.File;
@@ -14,7 +11,11 @@ import java.util.Map;
 import java.util.Set;
 
 
-public class ChannelWriter {
+public final class ChannelWriter {
+    private ChannelWriter() {
+        super();
+    }
+
     /**
      * write channel with channel fixed id
      *
@@ -23,7 +24,7 @@ public class ChannelWriter {
      * @throws IOException
      * @throws SignatureNotFoundException
      */
-    public static void put(File apkFile, String channel) throws IOException, SignatureNotFoundException {
+    public final static void put(File apkFile, String channel) throws IOException, SignatureNotFoundException {
         put(apkFile, channel, null);
     }
 
@@ -36,7 +37,7 @@ public class ChannelWriter {
      * @throws IOException
      * @throws SignatureNotFoundException
      */
-    public static void put(File apkFile, String channel, Map<String, String> extraInfo) throws IOException, SignatureNotFoundException {
+    public final static void put(File apkFile, String channel, Map<String, String> extraInfo) throws IOException, SignatureNotFoundException {
         Map<String, String> newData = new HashMap<String, String>();
         Map<String, String> existsData = ChannelReader.getMap(apkFile);
         if (existsData != null) {
@@ -62,7 +63,7 @@ public class ChannelWriter {
      * @throws IOException
      * @throws SignatureNotFoundException
      */
-    public static void putRaw(File apkFile, String string) throws IOException, SignatureNotFoundException {
+    public final static void putRaw(File apkFile, String string) throws IOException, SignatureNotFoundException {
         byte[] bytes = string.getBytes(ApkUtil.DEFAULT_CHARSET);
         ByteBuffer byteBuffer = ByteBuffer.allocate(bytes.length);
         byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
@@ -78,7 +79,7 @@ public class ChannelWriter {
      * @throws IOException
      * @throws SignatureNotFoundException
      */
-    public static void remove(File apkFile) throws IOException, SignatureNotFoundException {
+    public final static void remove(File apkFile) throws IOException, SignatureNotFoundException {
         PayloadWriter.handleApkSigningBlock(apkFile, new PayloadWriter.ApkSigningBlockHandler() {
             @Override
             public ApkSigningBlock handle(Map<Integer, ByteBuffer> originIdValues) {

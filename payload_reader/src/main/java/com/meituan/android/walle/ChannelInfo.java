@@ -5,7 +5,6 @@ import java.util.Map;
 /**
  * Created by chentong on 17/11/2016.
  */
-
 public class ChannelInfo {
     private String channel;
     private Map<String, String> extraInfo;

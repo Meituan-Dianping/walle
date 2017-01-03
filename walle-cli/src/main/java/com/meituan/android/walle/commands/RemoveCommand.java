@@ -4,7 +4,7 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.beust.jcommander.converters.FileConverter;
 import com.meituan.android.walle.ChannelWriter;
-import com.meituan.android.walle.internal.SignatureNotFoundException;
+import com.meituan.android.walle.SignatureNotFoundException;
 import com.meituan.android.walle.utils.Fun1;
 
 import java.io.File;

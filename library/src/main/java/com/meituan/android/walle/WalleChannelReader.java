@@ -9,14 +9,19 @@ import android.text.TextUtils;
 import java.io.File;
 import java.util.Map;
 
-public class WalleChannelReader {
+public final class WalleChannelReader {
+    private WalleChannelReader() {
+        super();
+    }
+
     /**
      * get channel
+     *
      * @param context context
      * @return channel, null if not fount
      */
     @Nullable
-    public static String getChannel(@NonNull Context context) {
+    public final static String getChannel(@NonNull Context context) {
         ChannelInfo channelInfo = getChannelInfo(context);
         if (channelInfo == null) {
             return null;
@@ -26,11 +31,12 @@ public class WalleChannelReader {
 
     /**
      * get channel info (include channle & extraInfo)
+     *
      * @param context context
      * @return channel info
      */
     @Nullable
-    public static ChannelInfo getChannelInfo(@NonNull Context context) {
+    public final static ChannelInfo getChannelInfo(@NonNull Context context) {
         String apkPath = getApkPath(context);
         if (TextUtils.isEmpty(apkPath)) {
             return null;
@@ -40,12 +46,13 @@ public class WalleChannelReader {
 
     /**
      * get value by key
+     *
      * @param context context
-     * @param key the key you store
+     * @param key     the key you store
      * @return value
      */
     @Nullable
-    public static String get(@NonNull Context context, @NonNull String key) {
+    public final static String get(@NonNull Context context, @NonNull String key) {
         Map<String, String> channelMap = getChannelInfoMap(context);
         if (channelMap == null) {
             return null;
@@ -55,11 +62,12 @@ public class WalleChannelReader {
 
     /**
      * get all channl info with map
+     *
      * @param context context
      * @return map
      */
     @Nullable
-    public static Map<String, String> getChannelInfoMap(@NonNull Context context) {
+    public final static Map<String, String> getChannelInfoMap(@NonNull Context context) {
         String apkPath = getApkPath(context);
         if (TextUtils.isEmpty(apkPath)) {
             return null;
@@ -68,7 +76,7 @@ public class WalleChannelReader {
     }
 
     @Nullable
-    private static String getApkPath(@NonNull Context context) {
+    private final static String getApkPath(@NonNull Context context) {
         String apkPath = null;
         try {
             ApplicationInfo applicationInfo = context.getApplicationInfo();

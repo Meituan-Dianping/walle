@@ -1,8 +1,5 @@
 package com.meituan.android.walle;
 
-import com.meituan.android.walle.internal.ApkUtil;
-import com.meituan.android.walle.internal.SignatureNotFoundException;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -11,13 +8,12 @@ import java.nio.channels.FileChannel;
 import java.util.Arrays;
 import java.util.Map;
 
-
-public class PayloadReader {
+class PayloadReader {
     /**
      * get bytes by id <br/>
      *
      * @param apkFile apk file
-     * @param id id
+     * @param id      id
      * @return bytes
      */
     public static byte[] get(File apkFile, int id) {
@@ -34,6 +30,7 @@ public class PayloadReader {
 
     /**
      * get data from byteBuffer
+     *
      * @param byteBuffer buffer
      * @return useful data
      */
@@ -43,9 +40,11 @@ public class PayloadReader {
         return Arrays.copyOfRange(array, arrayOffset + byteBuffer.position(),
                 arrayOffset + byteBuffer.limit());
     }
+
     /**
      * get all custom (id, buffer) <br/>
      * Note: get final from byteBuffer, please use {@link PayloadReader#getBytes getBytes}
+     *
      * @param apkFile apk file
      * @return all custom (id, buffer)
      */

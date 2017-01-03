@@ -1,9 +1,5 @@
 package com.meituan.android.walle;
 
-import com.meituan.android.walle.internal.ApkUtil;
-import com.meituan.android.walle.internal.Pair;
-import com.meituan.android.walle.internal.SignatureNotFoundException;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -15,7 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 
-public class PayloadWriter {
+class PayloadWriter {
     /**
      * put (id, buffer) into apk, update if id exists
      *

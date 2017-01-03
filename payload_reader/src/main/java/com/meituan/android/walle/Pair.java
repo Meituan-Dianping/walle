@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.meituan.android.walle.internal;
+package com.meituan.android.walle;
 
 /**
  * Pair of two elements.
  */
-public final class Pair<A, B> {
+final class Pair<A, B> {
     private final A mFirst;
     private final B mSecond;
 
