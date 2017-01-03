@@ -4,7 +4,7 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.beust.jcommander.converters.FileConverter;
 import com.meituan.android.walle.ChannelWriter;
-import com.meituan.android.walle.internal.SignatureNotFoundException;
+import com.meituan.android.walle.SignatureNotFoundException;
 import com.meituan.android.walle.utils.Fun1;
 
 import java.io.File;
@@ -22,7 +22,7 @@ public class RemoveCommand implements IWalleCommand {
     public void parse() {
         removeInfo(new Fun1<File, Boolean>() {
             @Override
-            public Boolean apply(File file) {
+            public Boolean apply(final File file) {
                 try {
                     ChannelWriter.remove(file);
                     return true;
@@ -33,7 +33,8 @@ public class RemoveCommand implements IWalleCommand {
             }
         });
     }
-    private void removeInfo(Fun1<File, Boolean> fun) {
+
+    private void removeInfo(final Fun1<File, Boolean> fun) {
         for (File file : files) {
             System.out.println(file.getAbsolutePath() + " : " + fun.apply(file));
         }

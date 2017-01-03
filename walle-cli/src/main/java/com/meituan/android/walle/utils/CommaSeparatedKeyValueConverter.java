@@ -11,13 +11,13 @@ import java.util.Map;
 
 public class CommaSeparatedKeyValueConverter implements IStringConverter<Map<String, String>> {
     @Override
-    public Map<String, String> convert(String value) {
+    public Map<String, String> convert(final String value) {
         Map<String, String> result = null;
         if (!Util.isTextEmpty(value)) {
-            String[] temp = value.split(",");
+            final String[] temp = value.split(",");
             result = new HashMap<String, String>(temp.length);
             for (String s : temp) {
-                String[] keyValue = s.split("=");
+                final String[] keyValue = s.split("=");
                 if (keyValue.length == 2) {
                     result.put(keyValue[0], keyValue[1]);
                 }

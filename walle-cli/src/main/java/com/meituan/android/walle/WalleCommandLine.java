@@ -14,12 +14,12 @@ import java.util.jar.Manifest;
 
 public class WalleCommandLine {
     @Parameter(names = {"-v", "--version"}, description = "show walle version")
-    private boolean showVersion = false;
+    private boolean showVersion;
 
     @Parameter(names = {"-h", "--help"}, description = "show walle command line help")
-    private boolean showHelp = false;
+    private boolean showHelp;
 
-    public void parse(JCommander commander) {
+    public void parse(final JCommander commander) {
         if (showVersion) {
             System.out.println(getVersion());
             return;
@@ -28,24 +28,23 @@ public class WalleCommandLine {
             commander.usage();
         }
     }
+
     private static String getVersion() {
-        Enumeration resEnum;
         try {
-            resEnum = Thread.currentThread().getContextClassLoader().getResources(JarFile.MANIFEST_NAME);
+            final Enumeration resEnum = Thread.currentThread().getContextClassLoader().getResources(JarFile.MANIFEST_NAME);
             while (resEnum.hasMoreElements()) {
                 try {
-                    URL url = (URL)resEnum.nextElement();
-                    InputStream is = url.openStream();
+                    final URL url = (URL) resEnum.nextElement();
+                    final InputStream is = url.openStream();
                     if (is != null) {
-                        Manifest manifest = new Manifest(is);
-                        Attributes mainAttribs = manifest.getMainAttributes();
-                        String version = mainAttribs.getValue("Walle-Version");
-                        if(version != null) {
+                        final Manifest manifest = new Manifest(is);
+                        final Attributes mainAttribs = manifest.getMainAttributes();
+                        final String version = mainAttribs.getValue("Walle-Version");
+                        if (version != null) {
                             return version;
                         }
                     }
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }

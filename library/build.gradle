@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply from: rootProject.file("mt_maven.gradle")
+apply from: rootProject.file('quality.gradle')
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -19,6 +20,12 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt')
         }
+    }
+
+    lintOptions {
+        quiet true
+        warningsAsErrors true
+        disable 'GradleDependency'
     }
 }
 

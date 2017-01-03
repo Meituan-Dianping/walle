@@ -1,4 +1,4 @@
-package com.meituan.android.walle.internal;
+package com.meituan.android.walle;
 
 import java.io.IOException;
 import java.nio.BufferUnderflowException;
@@ -8,7 +8,11 @@ import java.nio.channels.FileChannel;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class ApkUtil {
+final class ApkUtil {
+    private ApkUtil() {
+        super();
+    }
+
     /**
      * APK Signing Block Magic Code: magic “APK Sig Block 42” (16 bytes)
      * "APK Sig Block 42" : 41 50 4B 20 53 69 67 20 42 6C 6F 63 6B 20 34 32
@@ -30,26 +34,27 @@ public class ApkUtil {
 
     /**
      * check zip comment
+     *
      * @param fileChannel fileChannel
      * @return true if has comment
      * @throws IOException
      */
-    public static boolean checkComment(FileChannel fileChannel) throws IOException {
+    public static boolean checkComment(final FileChannel fileChannel) throws IOException {
         // End of central directory record (EOCD)
-        // Offset	Bytes	Description[23]
-        // 0	        4	    End of central directory signature = 0x06054b50
-        // 4	        2	    Number of this disk
-        // 6	        2	    Disk where central directory starts
-        // 8	        2	    Number of central directory records on this disk
-        // 10	        2	    Total number of central directory records
-        // 12	        4	    Size of central directory (bytes)
-        // 16	        4	    Offset of start of central directory, relative to start of archive
-        // 20	        2	    Comment length (n)
-        // 22	        n	    Comment
+        // Offset     Bytes     Description[23]
+        // 0            4       End of central directory signature = 0x06054b50
+        // 4            2       Number of this disk
+        // 6            2       Disk where central directory starts
+        // 8            2       Number of central directory records on this disk
+        // 10           2       Total number of central directory records
+        // 12           4       Size of central directory (bytes)
+        // 16           4       Offset of start of central directory, relative to start of archive
+        // 20           2       Comment length (n)
+        // 22           n       Comment
         // For a zip with no archive comment, the
         // end-of-central-directory record will be 22 bytes long, so
         // we expect to find the EOCD marker 22 bytes from the end.
-        ByteBuffer byteBuffer = ByteBuffer.allocate(4);
+        final ByteBuffer byteBuffer = ByteBuffer.allocate(4);
         fileChannel.position(fileChannel.size() - 22);
         fileChannel.read(byteBuffer);
 
@@ -62,35 +67,37 @@ public class ApkUtil {
         return false;
     }
 
-    public static long findCentralDirStartOffset(FileChannel fileChannel) throws IOException {
+    public static long findCentralDirStartOffset(final FileChannel fileChannel) throws IOException {
         // End of central directory record (EOCD)
-        // Offset	Bytes	Description[23]
-        // 0	        4	    End of central directory signature = 0x06054b50
-        // 4	        2	    Number of this disk
-        // 6	        2	    Disk where central directory starts
-        // 8	        2	    Number of central directory records on this disk
-        // 10	        2	    Total number of central directory records
-        // 12	        4	    Size of central directory (bytes)
-        // 16	        4	    Offset of start of central directory, relative to start of archive
-        // 20	        2	    Comment length (n)
-        // 22	        n	    Comment
+        // Offset    Bytes     Description[23]
+        // 0           4       End of central directory signature = 0x06054b50
+        // 4           2       Number of this disk
+        // 6           2       Disk where central directory starts
+        // 8           2       Number of central directory records on this disk
+        // 10          2       Total number of central directory records
+        // 12          4       Size of central directory (bytes)
+        // 16          4       Offset of start of central directory, relative to start of archive
+        // 20          2       Comment length (n)
+        // 22          n       Comment
         // For a zip with no archive comment, the
         // end-of-central-directory record will be 22 bytes long, so
         // we expect to find the EOCD marker 22 bytes from the end.
-        ByteBuffer zipEndOfCentralDirectory = ByteBuffer.allocate(4);
+        final ByteBuffer zipEndOfCentralDirectory = ByteBuffer.allocate(4);
         zipEndOfCentralDirectory.order(ByteOrder.LITTLE_ENDIAN);
         fileChannel.position(fileChannel.size() - 6); // 6 = 2 (Comment length) + 4 (Offset of start of central directory, relative to start of archive)
         fileChannel.read(zipEndOfCentralDirectory);
-        long centralDirStartOffset = zipEndOfCentralDirectory.getInt(0);
+        final long centralDirStartOffset = zipEndOfCentralDirectory.getInt(0);
         return centralDirStartOffset;
     }
+
     public static Pair<ByteBuffer, Long> findApkSigningBlock(
-            FileChannel fileChannel) throws IOException, SignatureNotFoundException {
-        long centralDirOffset = findCentralDirStartOffset(fileChannel);
+            final FileChannel fileChannel) throws IOException, SignatureNotFoundException {
+        final long centralDirOffset = findCentralDirStartOffset(fileChannel);
         return findApkSigningBlock(fileChannel, centralDirOffset);
     }
+
     public static Pair<ByteBuffer, Long> findApkSigningBlock(
-            FileChannel fileChannel, long centralDirOffset) throws IOException, SignatureNotFoundException {
+            final FileChannel fileChannel, final long centralDirOffset) throws IOException, SignatureNotFoundException {
 
         // Find the APK Signing Block. The block immediately precedes the Central Directory.
 
@@ -110,7 +117,7 @@ public class ApkUtil {
         // * uint64:   size of block
         // * 16 bytes: magic
         fileChannel.position(centralDirOffset - 24);
-        ByteBuffer footer = ByteBuffer.allocate(24);
+        final ByteBuffer footer = ByteBuffer.allocate(24);
         fileChannel.read(footer);
         footer.order(ByteOrder.LITTLE_ENDIAN);
         if ((footer.getLong(8) != APK_SIG_BLOCK_MAGIC_LO)
@@ -119,23 +126,23 @@ public class ApkUtil {
                     "No APK Signing Block before ZIP Central Directory");
         }
         // Read and compare size fields
-        long apkSigBlockSizeInFooter = footer.getLong(0);
+        final long apkSigBlockSizeInFooter = footer.getLong(0);
         if ((apkSigBlockSizeInFooter < footer.capacity())
                 || (apkSigBlockSizeInFooter > Integer.MAX_VALUE - 8)) {
             throw new SignatureNotFoundException(
                     "APK Signing Block size out of range: " + apkSigBlockSizeInFooter);
         }
-        int totalSize = (int) (apkSigBlockSizeInFooter + 8);
-        long apkSigBlockOffset = centralDirOffset - totalSize;
+        final int totalSize = (int) (apkSigBlockSizeInFooter + 8);
+        final long apkSigBlockOffset = centralDirOffset - totalSize;
         if (apkSigBlockOffset < 0) {
             throw new SignatureNotFoundException(
                     "APK Signing Block offset out of range: " + apkSigBlockOffset);
         }
         fileChannel.position(apkSigBlockOffset);
-        ByteBuffer apkSigBlock = ByteBuffer.allocate(totalSize);
+        final ByteBuffer apkSigBlock = ByteBuffer.allocate(totalSize);
         fileChannel.read(apkSigBlock);
         apkSigBlock.order(ByteOrder.LITTLE_ENDIAN);
-        long apkSigBlockSizeInHeader = apkSigBlock.getLong(0);
+        final long apkSigBlockSizeInHeader = apkSigBlock.getLong(0);
         if (apkSigBlockSizeInHeader != apkSigBlockSizeInFooter) {
             throw new SignatureNotFoundException(
                     "APK Signing Block sizes in header and footer do not match: "
@@ -144,7 +151,7 @@ public class ApkUtil {
         return Pair.of(apkSigBlock, apkSigBlockOffset);
     }
 
-    public static Map<Integer, ByteBuffer> findIdValues(ByteBuffer apkSigningBlock) throws SignatureNotFoundException {
+    public static Map<Integer, ByteBuffer> findIdValues(final ByteBuffer apkSigningBlock) throws SignatureNotFoundException {
         checkByteOrderLittleEndian(apkSigningBlock);
         // FORMAT:
         // OFFSET       DATA TYPE  DESCRIPTION
@@ -152,9 +159,9 @@ public class ApkUtil {
         // * @+8  bytes pairs
         // * @-24 bytes uint64:    size in bytes (same as the one above)
         // * @-16 bytes uint128:   magic
-        ByteBuffer pairs = sliceFromTo(apkSigningBlock, 8, apkSigningBlock.capacity() - 24);
+        final ByteBuffer pairs = sliceFromTo(apkSigningBlock, 8, apkSigningBlock.capacity() - 24);
 
-        Map<Integer, ByteBuffer> idValues = new LinkedHashMap<Integer, ByteBuffer>(); // keep order
+        final Map<Integer, ByteBuffer> idValues = new LinkedHashMap<Integer, ByteBuffer>(); // keep order
 
         int entryCount = 0;
         while (pairs.hasRemaining()) {
@@ -163,20 +170,20 @@ public class ApkUtil {
                 throw new SignatureNotFoundException(
                         "Insufficient data to read size of APK Signing Block entry #" + entryCount);
             }
-            long lenLong = pairs.getLong();
+            final long lenLong = pairs.getLong();
             if ((lenLong < 4) || (lenLong > Integer.MAX_VALUE)) {
                 throw new SignatureNotFoundException(
                         "APK Signing Block entry #" + entryCount
                                 + " size out of range: " + lenLong);
             }
-            int len = (int) lenLong;
-            int nextEntryPos = pairs.position() + len;
+            final int len = (int) lenLong;
+            final int nextEntryPos = pairs.position() + len;
             if (len > pairs.remaining()) {
                 throw new SignatureNotFoundException(
                         "APK Signing Block entry #" + entryCount + " size out of range: " + len
                                 + ", available: " + pairs.remaining());
             }
-            int id = pairs.getInt();
+            final int id = pairs.getInt();
             idValues.put(id, getByteBuffer(pairs, len - 4));
 
             pairs.position(nextEntryPos);
@@ -191,24 +198,24 @@ public class ApkUtil {
      * {@link ByteBuffer#slice()}, the returned buffer's byte order is the same as the source
      * buffer's byte order.
      */
-    private static ByteBuffer sliceFromTo(ByteBuffer source, int start, int end) {
+    private static ByteBuffer sliceFromTo(final ByteBuffer source, final int start, final int end) {
         if (start < 0) {
             throw new IllegalArgumentException("start: " + start);
         }
         if (end < start) {
             throw new IllegalArgumentException("end < start: " + end + " < " + start);
         }
-        int capacity = source.capacity();
+        final int capacity = source.capacity();
         if (end > source.capacity()) {
             throw new IllegalArgumentException("end > capacity: " + end + " > " + capacity);
         }
-        int originalLimit = source.limit();
-        int originalPosition = source.position();
+        final int originalLimit = source.limit();
+        final int originalPosition = source.position();
         try {
             source.position(0);
             source.limit(end);
             source.position(start);
-            ByteBuffer result = source.slice();
+            final ByteBuffer result = source.slice();
             result.order(source.order());
             return result;
         } finally {
@@ -227,20 +234,20 @@ public class ApkUtil {
      * {@code size}, byte order set to this buffer's byte order; and then increments the position by
      * {@code size}.
      */
-    private static ByteBuffer getByteBuffer(ByteBuffer source, int size)
+    private static ByteBuffer getByteBuffer(final ByteBuffer source, final int size)
             throws BufferUnderflowException {
         if (size < 0) {
             throw new IllegalArgumentException("size: " + size);
         }
-        int originalLimit = source.limit();
-        int position = source.position();
-        int limit = position + size;
+        final int originalLimit = source.limit();
+        final int position = source.position();
+        final int limit = position + size;
         if ((limit < position) || (limit > originalLimit)) {
             throw new BufferUnderflowException();
         }
         source.limit(limit);
         try {
-            ByteBuffer result = source.slice();
+            final ByteBuffer result = source.slice();
             result.order(source.order());
             source.position(limit);
             return result;
@@ -249,7 +256,7 @@ public class ApkUtil {
         }
     }
 
-    private static void checkByteOrderLittleEndian(ByteBuffer buffer) {
+    private static void checkByteOrderLittleEndian(final ByteBuffer buffer) {
         if (buffer.order() != ByteOrder.LITTLE_ENDIAN) {
             throw new IllegalArgumentException("ByteBuffer byte order must be little endian");
         }

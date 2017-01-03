@@ -4,7 +4,7 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.beust.jcommander.converters.FileConverter;
 import com.meituan.android.walle.ChannelWriter;
-import com.meituan.android.walle.internal.SignatureNotFoundException;
+import com.meituan.android.walle.SignatureNotFoundException;
 import com.meituan.android.walle.utils.CommaSeparatedKeyValueConverter;
 
 import org.apache.commons.io.FileUtils;
@@ -29,14 +29,14 @@ public class WriteChannelCommand implements IWalleCommand{
 
     @Override
     public void parse() {
-        File inputFile = files.get(0);
+        final File inputFile = files.get(0);
         File outputFile = null;
         if (files.size() == 2) {
             outputFile = files.get(1);
         } else {
-            String name = FilenameUtils.getBaseName(inputFile.getName());
-            String extension = FilenameUtils.getExtension(inputFile.getName());
-            String newName = name + "_" + channel + "." + extension;
+            final String name = FilenameUtils.getBaseName(inputFile.getName());
+            final String extension = FilenameUtils.getExtension(inputFile.getName());
+            final String newName = name + "_" + channel + "." + extension;
             outputFile = new File(inputFile.getParent(), newName);
         }
         if (inputFile.equals(outputFile)) {

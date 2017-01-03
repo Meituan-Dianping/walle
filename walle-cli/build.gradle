@@ -9,6 +9,7 @@ buildscript {
 
 apply plugin: 'java'
 apply plugin: 'com.github.johnrengelman.shadow'
+apply from: rootProject.file('quality.gradle')
 
 jar {
     manifest {
