@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 @Parameters(commandDescription = "channel apk batch production")
-public class WriteChannelsCommand implements IWalleCommand{
+public class WriteChannelsCommand implements IWalleCommand {
 
     @Parameter(required = true, description = "inputFile [outputDirectory]", arity = 2, converter = FileConverter.class)
     private List<File> files;
@@ -34,7 +34,7 @@ public class WriteChannelsCommand implements IWalleCommand{
 
     @Override
     public void parse() {
-        File inputFile = files.get(0);
+        final File inputFile = files.get(0);
         File outputDir = null;
         if (files.size() == 2) {
             outputDir = files.get(1);
@@ -53,9 +53,9 @@ public class WriteChannelsCommand implements IWalleCommand{
 
         if (channelFile != null) {
             try {
-                List<String> lines = IOUtils.readLines(new FileInputStream(channelFile), "UTF-8");
+                final List<String> lines = IOUtils.readLines(new FileInputStream(channelFile), "UTF-8");
                 for (String line : lines) {
-                    String channel = line.split("#")[0].trim();
+                    final String channel = line.split("#")[0].trim();
                     generateChannelApk(inputFile, outputDir, channel);
                 }
             } catch (IOException e) {
@@ -64,11 +64,11 @@ public class WriteChannelsCommand implements IWalleCommand{
         }
     }
 
-    private void generateChannelApk(File inputFile, File outputDir, String channel) {
-        String name = FilenameUtils.getBaseName(inputFile.getName());
-        String extension = FilenameUtils.getExtension(inputFile.getName());
-        String newName = name + "_" + channel + "." + extension;
-        File channelApk = new File(outputDir, newName);
+    private void generateChannelApk(final File inputFile, final File outputDir, final String channel) {
+        final String name = FilenameUtils.getBaseName(inputFile.getName());
+        final String extension = FilenameUtils.getExtension(inputFile.getName());
+        final String newName = name + "_" + channel + "." + extension;
+        final File channelApk = new File(outputDir, newName);
         try {
             FileUtils.copyFile(inputFile, channelApk);
             ChannelWriter.put(channelApk, channel, extraInfo);

@@ -8,7 +8,7 @@ class ApkSigningPayload {
     private final int id;
     private final ByteBuffer buffer;
 
-    ApkSigningPayload(int id, ByteBuffer buffer) {
+    ApkSigningPayload(final int id, final ByteBuffer buffer) {
         super();
         this.id = id;
         if (buffer.order() != ByteOrder.LITTLE_ENDIAN) {

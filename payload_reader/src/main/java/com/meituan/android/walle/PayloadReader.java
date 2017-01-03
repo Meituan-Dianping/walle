@@ -8,7 +8,11 @@ import java.nio.channels.FileChannel;
 import java.util.Arrays;
 import java.util.Map;
 
-public class PayloadReader {
+public final class PayloadReader {
+    private PayloadReader() {
+        super();
+    }
+
     /**
      * get bytes by id <br/>
      *
@@ -16,12 +20,12 @@ public class PayloadReader {
      * @param id      id
      * @return bytes
      */
-    public static byte[] get(File apkFile, int id) {
-        Map<Integer, ByteBuffer> idValues = getAll(apkFile);
+    public static byte[] get(final File apkFile, final int id) {
+        final Map<Integer, ByteBuffer> idValues = getAll(apkFile);
         if (idValues == null) {
             return null;
         }
-        ByteBuffer byteBuffer = idValues.get(id);
+        final ByteBuffer byteBuffer = idValues.get(id);
         if (byteBuffer == null) {
             return null;
         }
@@ -34,7 +38,7 @@ public class PayloadReader {
      * @param byteBuffer buffer
      * @return useful data
      */
-    private static byte[] getBytes(ByteBuffer byteBuffer) {
+    private static byte[] getBytes(final ByteBuffer byteBuffer) {
         final byte[] array = byteBuffer.array();
         final int arrayOffset = byteBuffer.arrayOffset();
         return Arrays.copyOfRange(array, arrayOffset + byteBuffer.position(),
@@ -48,7 +52,7 @@ public class PayloadReader {
      * @param apkFile apk file
      * @return all custom (id, buffer)
      */
-    private static Map<Integer, ByteBuffer> getAll(File apkFile) {
+    private static Map<Integer, ByteBuffer> getAll(final File apkFile) {
         Map<Integer, ByteBuffer> idValues = null;
         try {
             RandomAccessFile randomAccessFile = null;
@@ -56,11 +60,11 @@ public class PayloadReader {
             try {
                 randomAccessFile = new RandomAccessFile(apkFile, "r");
                 fileChannel = randomAccessFile.getChannel();
-                boolean hasComment = ApkUtil.checkComment(fileChannel);
+                final boolean hasComment = ApkUtil.checkComment(fileChannel);
                 if (hasComment) {
                     throw new IllegalArgumentException("zip data already has an archive comment");
                 }
-                ByteBuffer apkSigningBlock2 = ApkUtil.findApkSigningBlock(fileChannel).getFirst();
+                final ByteBuffer apkSigningBlock2 = ApkUtil.findApkSigningBlock(fileChannel).getFirst();
                 idValues = ApkUtil.findIdValues(apkSigningBlock2);
             } catch (IOException ignore) {
             } finally {

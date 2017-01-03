@@ -42,15 +42,15 @@ class ApkSigningBlock {
         return payloads;
     }
 
-    public void addPayload(ApkSigningPayload payload) {
+    public void addPayload(final ApkSigningPayload payload) {
         payloads.add(payload);
     }
 
-    public long writeApkSigningBlock(DataOutput dataOutput) throws IOException {
+    public long writeApkSigningBlock(final DataOutput dataOutput) throws IOException {
         long length = 24; // 24 = 8(size of block in bytes—same as the very first field (uint64)) + 16 (magic “APK Sig Block 42” (16 bytes))
         for (int index = 0; index < payloads.size(); ++index) {
-            ApkSigningPayload payload = payloads.get(index);
-            byte[] bytes = payload.getByteBuffer();
+            final ApkSigningPayload payload = payloads.get(index);
+            final byte[] bytes = payload.getByteBuffer();
             length += 12 + bytes.length; // 12 = 8(uint64-length-prefixed) + 4 (ID (uint32))
         }
 
@@ -61,8 +61,8 @@ class ApkSigningBlock {
         dataOutput.write(byteBuffer.array());
 
         for (int index = 0; index < payloads.size(); ++index) {
-            ApkSigningPayload payload = payloads.get(index);
-            byte[] bytes = payload.getByteBuffer();
+            final ApkSigningPayload payload = payloads.get(index);
+            final byte[] bytes = payload.getByteBuffer();
 
             byteBuffer = ByteBuffer.allocate(8); // Long.BYTES
             byteBuffer.order(ByteOrder.LITTLE_ENDIAN);

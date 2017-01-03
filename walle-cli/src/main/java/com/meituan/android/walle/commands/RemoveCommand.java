@@ -22,7 +22,7 @@ public class RemoveCommand implements IWalleCommand {
     public void parse() {
         removeInfo(new Fun1<File, Boolean>() {
             @Override
-            public Boolean apply(File file) {
+            public Boolean apply(final File file) {
                 try {
                     ChannelWriter.remove(file);
                     return true;
@@ -33,7 +33,8 @@ public class RemoveCommand implements IWalleCommand {
             }
         });
     }
-    private void removeInfo(Fun1<File, Boolean> fun) {
+
+    private void removeInfo(final Fun1<File, Boolean> fun) {
         for (File file : files) {
             System.out.println(file.getAbsolutePath() + " : " + fun.apply(file));
         }

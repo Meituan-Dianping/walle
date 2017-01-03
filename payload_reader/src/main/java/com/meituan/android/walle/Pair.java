@@ -23,12 +23,12 @@ final class Pair<A, B> {
     private final A mFirst;
     private final B mSecond;
 
-    private Pair(A first, B second) {
+    private Pair(final A first, final B second) {
         mFirst = first;
         mSecond = second;
     }
 
-    public static <A, B> Pair<A, B> of(A first, B second) {
+    public static <A, B> Pair<A, B> of(final A first, final B second) {
         return new Pair<A, B>(first, second);
     }
 
@@ -50,7 +50,7 @@ final class Pair<A, B> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }
@@ -61,7 +61,7 @@ final class Pair<A, B> {
             return false;
         }
         @SuppressWarnings("rawtypes")
-        Pair other = (Pair) obj;
+        final Pair other = (Pair) obj;
         if (mFirst == null) {
             if (other.mFirst != null) {
                 return false;

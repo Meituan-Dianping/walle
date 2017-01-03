@@ -1,5 +1,6 @@
 apply plugin: 'java'
 apply from: rootProject.file("mt_maven.gradle")
+apply from: rootProject.file('quality.gradle')
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])

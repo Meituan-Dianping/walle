@@ -1,6 +1,6 @@
 apply plugin: 'groovy'
 apply from: rootProject.file("mt_maven.gradle")
-
+//apply from: rootProject.file('quality.gradle')
 
 dependencies {
     compile gradleApi()

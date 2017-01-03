@@ -6,10 +6,10 @@ import java.util.Map;
  * Created by chentong on 17/11/2016.
  */
 public class ChannelInfo {
-    private String channel;
-    private Map<String, String> extraInfo;
+    private final String channel;
+    private final Map<String, String> extraInfo;
 
-    public ChannelInfo(String channel, Map<String, String> extraInfo) {
+    public ChannelInfo(final String channel, final Map<String, String> extraInfo) {
         this.channel = channel;
         this.extraInfo = extraInfo;
     }

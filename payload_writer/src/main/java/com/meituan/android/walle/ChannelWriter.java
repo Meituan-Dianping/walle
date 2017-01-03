@@ -24,7 +24,7 @@ public final class ChannelWriter {
      * @throws IOException
      * @throws SignatureNotFoundException
      */
-    public final static void put(File apkFile, String channel) throws IOException, SignatureNotFoundException {
+    public static void put(final File apkFile, final String channel) throws IOException, SignatureNotFoundException {
         put(apkFile, channel, null);
     }
 
@@ -37,20 +37,21 @@ public final class ChannelWriter {
      * @throws IOException
      * @throws SignatureNotFoundException
      */
-    public final static void put(File apkFile, String channel, Map<String, String> extraInfo) throws IOException, SignatureNotFoundException {
-        Map<String, String> newData = new HashMap<String, String>();
-        Map<String, String> existsData = ChannelReader.getMap(apkFile);
+    public static void put(final File apkFile, final String channel, final Map<String, String> extraInfo) throws IOException, SignatureNotFoundException {
+        final Map<String, String> newData = new HashMap<String, String>();
+        final Map<String, String> existsData = ChannelReader.getMap(apkFile);
         if (existsData != null) {
             newData.putAll(existsData);
         }
         if (extraInfo != null) {
-            extraInfo.remove(ChannelReader.CHANNEL_KEY);// can't use
+            // can't use
+            extraInfo.remove(ChannelReader.CHANNEL_KEY);
             newData.putAll(extraInfo);
         }
         if (channel != null && channel.length() > 0) {
             newData.put(ChannelReader.CHANNEL_KEY, channel);
         }
-        JSONObject jsonObject = new JSONObject(newData);
+        final JSONObject jsonObject = new JSONObject(newData);
         putRaw(apkFile, jsonObject.toString());
     }
 
@@ -63,9 +64,9 @@ public final class ChannelWriter {
      * @throws IOException
      * @throws SignatureNotFoundException
      */
-    public final static void putRaw(File apkFile, String string) throws IOException, SignatureNotFoundException {
-        byte[] bytes = string.getBytes(ApkUtil.DEFAULT_CHARSET);
-        ByteBuffer byteBuffer = ByteBuffer.allocate(bytes.length);
+    public static void putRaw(final File apkFile, final String string) throws IOException, SignatureNotFoundException {
+        final byte[] bytes = string.getBytes(ApkUtil.DEFAULT_CHARSET);
+        final ByteBuffer byteBuffer = ByteBuffer.allocate(bytes.length);
         byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
         byteBuffer.put(bytes, 0, bytes.length);
         byteBuffer.flip();
@@ -79,15 +80,15 @@ public final class ChannelWriter {
      * @throws IOException
      * @throws SignatureNotFoundException
      */
-    public final static void remove(File apkFile) throws IOException, SignatureNotFoundException {
+    public static void remove(final File apkFile) throws IOException, SignatureNotFoundException {
         PayloadWriter.handleApkSigningBlock(apkFile, new PayloadWriter.ApkSigningBlockHandler() {
             @Override
-            public ApkSigningBlock handle(Map<Integer, ByteBuffer> originIdValues) {
-                ApkSigningBlock apkSigningBlock = new ApkSigningBlock();
-                Set<Map.Entry<Integer, ByteBuffer>> entrySet = originIdValues.entrySet();
+            public ApkSigningBlock handle(final Map<Integer, ByteBuffer> originIdValues) {
+                final ApkSigningBlock apkSigningBlock = new ApkSigningBlock();
+                final Set<Map.Entry<Integer, ByteBuffer>> entrySet = originIdValues.entrySet();
                 for (Map.Entry<Integer, ByteBuffer> entry : entrySet) {
                     if (entry.getKey() != ApkUtil.APK_CHANNEL_BLOCK_ID) {
-                        ApkSigningPayload payload = new ApkSigningPayload(entry.getKey(), entry.getValue());
+                        final ApkSigningPayload payload = new ApkSigningPayload(entry.getKey(), entry.getValue());
                         apkSigningBlock.addPayload(payload);
                     }
                 }

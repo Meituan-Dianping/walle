@@ -21,8 +21,8 @@ public final class WalleChannelReader {
      * @return channel, null if not fount
      */
     @Nullable
-    public final static String getChannel(@NonNull Context context) {
-        ChannelInfo channelInfo = getChannelInfo(context);
+    public static String getChannel(@NonNull final Context context) {
+        final ChannelInfo channelInfo = getChannelInfo(context);
         if (channelInfo == null) {
             return null;
         }
@@ -36,8 +36,8 @@ public final class WalleChannelReader {
      * @return channel info
      */
     @Nullable
-    public final static ChannelInfo getChannelInfo(@NonNull Context context) {
-        String apkPath = getApkPath(context);
+    public static ChannelInfo getChannelInfo(@NonNull final Context context) {
+        final String apkPath = getApkPath(context);
         if (TextUtils.isEmpty(apkPath)) {
             return null;
         }
@@ -52,8 +52,8 @@ public final class WalleChannelReader {
      * @return value
      */
     @Nullable
-    public final static String get(@NonNull Context context, @NonNull String key) {
-        Map<String, String> channelMap = getChannelInfoMap(context);
+    public static String get(@NonNull final Context context, @NonNull final String key) {
+        final Map<String, String> channelMap = getChannelInfoMap(context);
         if (channelMap == null) {
             return null;
         }
@@ -67,8 +67,8 @@ public final class WalleChannelReader {
      * @return map
      */
     @Nullable
-    public final static Map<String, String> getChannelInfoMap(@NonNull Context context) {
-        String apkPath = getApkPath(context);
+    public static Map<String, String> getChannelInfoMap(@NonNull final Context context) {
+        final String apkPath = getApkPath(context);
         if (TextUtils.isEmpty(apkPath)) {
             return null;
         }
@@ -76,10 +76,10 @@ public final class WalleChannelReader {
     }
 
     @Nullable
-    private final static String getApkPath(@NonNull Context context) {
+    private static String getApkPath(@NonNull final Context context) {
         String apkPath = null;
         try {
-            ApplicationInfo applicationInfo = context.getApplicationInfo();
+            final ApplicationInfo applicationInfo = context.getApplicationInfo();
             if (applicationInfo == null) {
                 return null;
             }

@@ -19,44 +19,44 @@ public class ShowCommand implements IWalleCommand {
     private List<File> files;
 
     @Parameter(names = {"-e", "--extraInfo"}, description = "get channel extra info")
-    private boolean showExtraInfo = false;
+    private boolean showExtraInfo;
 
     @Parameter(names = {"-c", "--channel"}, description = "get channel")
-    private boolean shoChannel = false;
+    private boolean shoChannel;
 
     @Parameter(names = {"-r", "--raw"}, description = "get raw string from Channel id")
-    private boolean showRaw = false;
+    private boolean showRaw;
 
     @Override
     public void parse() {
         if (showRaw) {
             printInfo(new Fun1<File, String>() {
                 @Override
-                public String apply(File file) {
-                    String rawChannelInfo = ChannelReader.getRaw(file);
+                public String apply(final File file) {
+                    final String rawChannelInfo = ChannelReader.getRaw(file);
                     return rawChannelInfo == null ? "" : rawChannelInfo;
                 }
             });
         }
-        if(showExtraInfo) {
+        if (showExtraInfo) {
             printInfo(new Fun1<File, String>() {
                 @Override
-                public String apply(File file) {
-                    ChannelInfo channelInfo = ChannelReader.get(file);
+                public String apply(final File file) {
+                    final ChannelInfo channelInfo = ChannelReader.get(file);
                     if (channelInfo == null) {
                         return "";
                     }
-                    Map<String, String> map = channelInfo.getExtraInfo();
+                    final Map<String, String> map = channelInfo.getExtraInfo();
                     return map == null ? "" : map.toString();
                 }
             });
             return;
         }
-        if(shoChannel) {
+        if (shoChannel) {
             printInfo(new Fun1<File, String>() {
                 @Override
-                public String apply(File file) {
-                    ChannelInfo channelInfo = ChannelReader.get(file);
+                public String apply(final File file) {
+                    final ChannelInfo channelInfo = ChannelReader.get(file);
                     if (channelInfo == null) {
                         return "";
                     }
@@ -67,13 +67,14 @@ public class ShowCommand implements IWalleCommand {
         }
         printInfo(new Fun1<File, String>() {
             @Override
-            public String apply(File file) {
-                Map<String, String> map = ChannelReader.getMap(file);
+            public String apply(final File file) {
+                final Map<String, String> map = ChannelReader.getMap(file);
                 return map == null ? "" : map.toString();
             }
         });
     }
-    private void printInfo(Fun1<File, String> fun) {
+
+    private void printInfo(final Fun1<File, String> fun) {
         for (File file : files) {
             System.out.println(file.getAbsolutePath() + " : " + fun.apply(file));
         }
