@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 
-class PayloadWriter {
+public class PayloadWriter {
     /**
      * put (id, buffer) into apk, update if id exists
      *

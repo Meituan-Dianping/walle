@@ -8,7 +8,7 @@ import java.nio.channels.FileChannel;
 import java.util.Arrays;
 import java.util.Map;
 
-class PayloadReader {
+public class PayloadReader {
     /**
      * get bytes by id <br/>
      *
