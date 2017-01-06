@@ -2,7 +2,7 @@
 
 Walle（瓦力）：Android Signature V2 Scheme签名下的新一代渠道包打包神器
 
-瓦力通过在APK中的`APK Signature Block`区块添加自定义的渠道信息来生成渠道包，从而提高了渠道包生成效率，可以作为单机工具来使用，也可以部署在HTTP服务器上来实时处理渠道包Apk的升级网络请求。
+瓦力通过在Apk中的`APK Signature Block`区块添加自定义的渠道信息来生成渠道包，从而提高了渠道包生成效率，可以作为单机工具来使用，也可以部署在HTTP服务器上来实时处理渠道包Apk的升级网络请求。
 
 ## Quick Start
 为了方便大家的使用，我们提供了2种使用方式：
@@ -102,7 +102,7 @@ String value = WalleChannelReader.get(context, "buildtime");
 
 ## 注意事项
 
-* 使用apksigner重新对apk签名会导致渠道信息丢失，需要再次写入渠道信息
+* 使用apksigner重新对Apk签名会导致渠道信息丢失，需要再次写入渠道信息
 
 ## 技术支持
 
