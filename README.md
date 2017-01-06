@@ -1,8 +1,8 @@
 # Walle
 
-Walle(瓦力)：Android Signature V2 Scheme签名下的新一代渠道包打包神器
+Walle（瓦力）：Android Signature V2 Scheme签名下的新一代渠道包打包神器
 
-通过修改和添加Android APK包中的`APK Signature Block`，从而实现能够快速的生成多渠道包，这样能大大提高打包的效率，而且还能节省存储空间，具有步骤简单、易于实现等优点，适合在磁盘上生成不同渠道包时所使用的， 并也适合在HTTP服务器来实时动态生成不同渠道包时所使用的。
+通过在Android APK包中的`APK Signature Block`区块添加自定义的渠道信息来生成渠道包，从而提高了渠道包生成效率，瓦力可以作为单机工具来生成渠道包，也可以部署在HTTP服务器上实时动态生成渠道包。
 
 ## Quick Start
 为了方便大家的使用，我们提供了2种使用方式：
