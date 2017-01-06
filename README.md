@@ -4,8 +4,6 @@ Walle(瓦力)：支持Android Signature V2 Scheme签名的新一代渠道包打�
 Android N推出 [APK Signature Scheme v2](https://source.android.com/security/apksigning/v2.html) 之后，我们之前快速生成渠道包的方式已经行不通了。
 这里我们另辟蹊径找到一种简单快速的渠道包生成方式。
 
-![walle.png](assets/walle.png)
-
 ## 原理介绍
 [美团Android新一代渠道包生成工具](http://tech.meituan.com/android-apk-v2-signature-scheme.html)
 
