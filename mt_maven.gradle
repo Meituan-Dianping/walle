@@ -56,10 +56,10 @@ bintray {
     pkg {
         repo = 'maven'
         name = "${project.group}:${project.name}"
-        userOrg = user
+        userOrg = 'meituan'
         licenses = ['Apache-2.0']
-        websiteUrl = ''
-        vcsUrl = ''
+        websiteUrl = 'http://tech.meituan.com/android-apk-v2-signature-scheme.html'
+        vcsUrl = 'https://github.com/Meituan-Dianping/walle'
         publish = true
     }
 }
