@@ -25,7 +25,7 @@ public class WriteChannelCommand implements IWalleCommand{
     private Map<String, String> extraInfo;
 
     @Parameter(names = {"-c", "--channel"}, description = "single channel, eg: -c meituan")
-    private String channel = "undefined";
+    private String channel;
 
     @Override
     public void parse() {

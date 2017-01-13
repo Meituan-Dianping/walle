@@ -22,7 +22,7 @@ java -jar walle-cli-all.jar show /Users/Meituan/app/build/outputs/apk/app.apk
 java -jar walle-cli-all.jar put -c meituan /Users/Meituan/Downloads/app.apk
 ```
 
-写入额外信息，不提供渠道时默认渠道是undefined
+写入额外信息，不提供渠道时不写入渠道
 
 ```
 java -jar walle-cli-all.jar put -c meituan -e buildtime=20161212,hash=xxxxxxx /Users/xxx/Downloads/app.apk
