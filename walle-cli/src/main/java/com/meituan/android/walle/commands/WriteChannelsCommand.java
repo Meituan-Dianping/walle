@@ -55,8 +55,12 @@ public class WriteChannelsCommand implements IWalleCommand {
             try {
                 final List<String> lines = IOUtils.readLines(new FileInputStream(channelFile), "UTF-8");
                 for (String line : lines) {
+                    String lineTrim = line.trim();
+                    if (lineTrim.length() == 0 || lineTrim.startsWith("#")) continue;
                     final String channel = line.split("#")[0].trim();
-                    generateChannelApk(inputFile, outputDir, channel);
+                    if (channel.length() != 0) {
+                        generateChannelApk(inputFile, outputDir, channel);
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();

@@ -84,10 +84,12 @@ class ChannelMaker extends DefaultTask {
             println "channel file does not exist"
             return channelList
         } else {
-            channelFile.eachLine { line ->
-                if( line.trim() ) {
-                    def channel = line.split('#').first().trim()
-                    channelList.add(channel)
+             channelFile.eachLine { line ->
+                def lineTrim = line.trim()
+                if(lineTrim.length() != 0 && !lineTrim.startsWith("#")) {
+                    def channel = line.split("#").first().trim()
+                    if (channel.length() != 0)
+                        channelList.add(channel)
                 }
             }
         }
