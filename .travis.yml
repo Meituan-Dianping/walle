@@ -1,4 +1,6 @@
 language: android
+jdk:
+  - oraclejdk8
 android:
   components:
     - build-tools-24.0.1
@@ -7,8 +9,6 @@ android:
     - extra-android-support
   licenses:
     - 'android-sdk-license-.+'
-  jdk:
-    - oraclejdk8
 
 script:
    - ./gradlew build connectedCheck
