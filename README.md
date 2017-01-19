@@ -1,5 +1,8 @@
 # Walle
 
+[![Build Status](https://api.travis-ci.org/Meituan-Dianping/walle.svg?branch=master)](https://travis-ci.org/Meituan-Dianping/walle)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/Meituan-Dianping/walle/pulls)
+
 Walle（瓦力）：Android Signature V2 Scheme签名下的新一代渠道包打包神器
 
 瓦力通过在Apk中的`APK Signature Block`区块添加自定义的渠道信息来生成渠道包，从而提高了渠道包生成效率，可以作为单机工具来使用，也可以部署在HTTP服务器上来实时处理渠道包Apk的升级网络请求。
