@@ -7,6 +7,8 @@ android:
     - extra-android-support
   licenses:
     - 'android-sdk-license-.+'
+  jdk:
+    - oraclejdk8
 
 script:
    - ./gradlew build connectedCheck
