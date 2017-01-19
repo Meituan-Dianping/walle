@@ -2,9 +2,7 @@ meituan # 美团
 samsungapps #三星
 hiapk
 anzhi
-360cn
 xiaomi # 小米
-myapp
 91com
 gfan
 appchina
@@ -17,6 +15,14 @@ wostore
 lenovomm
 hicloud
 meizu
-baidu
-googleplay
 wandou
+# Google Play
+# googleplay
+# 百度
+baidu
+#
+# 360
+360cn
+#
+# 应用宝
+myapp
