@@ -2,7 +2,7 @@
 [![Release Version](https://api.bintray.com/packages/meituan/maven/com.meituan.android.walle:library/images/download.svg)](https://github.com/Meituan-Dianping/walle/releases)
 [![Build Status](https://api.travis-ci.org/Meituan-Dianping/walle.svg?branch=master)](https://travis-ci.org/Meituan-Dianping/walle)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/Meituan-Dianping/walle/pulls)
-[![GitHub license](https://img.shields.io/badge/license-Apache%202-brightgreen.svg)](https://raw.githubusercontent.com/Meituan-Dianping/walle/master/LICENSE)
+[![GitHub license](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://raw.githubusercontent.com/Meituan-Dianping/walle/master/LICENSE)
 
 Walle（瓦力）：Android Signature V2 Scheme签名下的新一代渠道包打包神器
 
