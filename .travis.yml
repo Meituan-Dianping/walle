@@ -1,5 +1,10 @@
 language: android
 jdk: oraclejdk8
+
+env:
+  matrix:
+    - ANDROID_TARGET=android-24   ANDROID_ABI=armeabi-v7a
+
 android:
   components:
     - tools
@@ -10,15 +15,29 @@ android:
     - extra-android-m2repository
     - extra-google-m2repository
     - extra-android-support
+
+    - sys-img-armeabi-v7a-android-24
+
   licenses:
     - 'android-sdk-license-.+'
     - 'android-sdk-preview-license-.+'
     - 'android-sdk-license-.+'
     - 'google-gdk-license-.+'
+
   before_script:
-    - "android update sdk --no-ui --filter build-tools-24.0.1,android-24,extra-android-m2repository"
+    - android update sdk --no-ui --filter build-tools-24.0.1,android-24,extra-android-m2repository
+    # Create and start emulator
+    - echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI
+    - emulator -avd test -no-skin -no-audio -no-window &
+    - adb wait-for-device
+    - adb shell input keyevent 82 &
+
 os:
   - linux
 
 script:
    - ./gradlew build connectedCheck
+
+cache:
+  directories:
+    - $HOME/.gradle
