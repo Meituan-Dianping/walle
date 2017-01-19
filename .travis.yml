@@ -1,8 +1,10 @@
 language: android
-jdk:
-  - oraclejdk8
+jdk: oraclejdk8
 android:
   components:
+    - tools
+    - platform-tools
+    - tools
     - build-tools-24.0.1
     - android-24
     - extra-android-m2repository
@@ -10,6 +12,13 @@ android:
     - extra-android-support
   licenses:
     - 'android-sdk-license-.+'
+    - 'android-sdk-preview-license-.+'
+    - 'android-sdk-license-.+'
+    - 'google-gdk-license-.+'
+  before_script:
+    - "android update sdk --no-ui --filter build-tools-24.0.1,android-24,extra-android-m2repository"
+os:
+  - linux
 
 script:
    - ./gradlew build connectedCheck
