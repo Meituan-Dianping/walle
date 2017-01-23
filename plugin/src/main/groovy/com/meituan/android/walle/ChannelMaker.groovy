@@ -9,6 +9,7 @@ import org.apache.commons.io.IOUtils
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.Project
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 
 import java.nio.ByteBuffer
@@ -18,8 +19,11 @@ class ChannelMaker extends DefaultTask {
 
     private static final String DOT_APK = ".apk";
 
+    @Input
     public BaseVariant variant;
+    @Input
     public Project targetProject;
+    @Input
     public File apkFile;
 
     public void setup() {
@@ -30,6 +34,7 @@ class ChannelMaker extends DefaultTask {
     private static final String PROPERTY_CHANNEL_FILE = 'channelFile'
     private static final String PROPERTY_CHANNEL_LIST = 'channelList'
     private static final String PROPERTY_EXTRA_INFO = 'extraInfo'
+
     @TaskAction
     public void packaging() {
         boolean hasChannelList = targetProject.hasProperty(PROPERTY_CHANNEL_LIST)
@@ -44,18 +49,17 @@ class ChannelMaker extends DefaultTask {
 
         checkV2Signature()
 
-
         def channelList = new ArrayList<String>()
 
         if(hasChannelList){
             def channelListProperty = targetProject.getProperties().get(PROPERTY_CHANNEL_LIST)
-            if (channelListProperty != null && channelListProperty.length() != 0) {
+            if (channelListProperty != null && channelListProperty.trim().length() != 0) {
                 channelList.addAll(channelListProperty.split(",").collect{it.trim()})
             }
         }
         if (hasChannelFile) {
             def channelFileProperty = targetProject.getProperties().get(PROPERTY_CHANNEL_FILE)
-            channelList.addAll(getChannelListFromFile(channelFileProperty))
+            channelList.addAll(getChannelListFromFile(targetProject, channelFileProperty))
         }
         def extraInfo = null
         if (hasExtraInfo) {
@@ -69,19 +73,18 @@ class ChannelMaker extends DefaultTask {
 
         channelList.each {channel -> generateChannelApk(channel, extraInfo)}
 
-        println "APK Signature Scheme v2 Channel Maker takes about " + (System.currentTimeMillis() - startTime) + " milliseconds";
-
+        targetProject.logger.lifecycle("APK Signature Scheme v2 Channel Maker takes about " + (System.currentTimeMillis() - startTime) + " milliseconds");
     }
 
-    static def getChannelListFromFile(channelFileProperty) {
+    static def getChannelListFromFile(Project project, channelFileProperty) {
         def channelList = []
-        if (channelFileProperty == null || channelFileProperty.length() == 0) {
+        if (channelFileProperty == null || channelFileProperty.trim().length() == 0) {
             return channelList
         }
         def channelFile = new File(channelFileProperty.trim())
 
         if (!channelFile.exists()) {
-            println "channel file does not exist"
+            project.logger.warn("channel file does not exist")
             return channelList
         } else {
              channelFile.eachLine { line ->
