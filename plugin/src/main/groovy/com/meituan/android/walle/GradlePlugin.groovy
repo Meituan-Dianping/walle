@@ -51,7 +51,7 @@ class GradlePlugin implements org.gradle.api.Plugin<Project> {
 
     boolean isV2SignatureSchemeEnabled(BaseVariant variant) throws GradleException {
         def signingConfig = getSigningConfig(variant);
-        if (signingConfig == null) {
+        if (signingConfig == null || !signingConfig.isSigningReady()) {
             return false;
         }
 
