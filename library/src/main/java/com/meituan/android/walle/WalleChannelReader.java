@@ -37,7 +37,7 @@ public final class WalleChannelReader {
      * @return channel, default if not fount
      */
     @Nullable
-    public static String getChannel(@NonNull final Context context, @NonNull String defaultChannel) {
+    public static String getChannel(@NonNull final Context context, @NonNull final String defaultChannel) {
         final ChannelInfo channelInfo = getChannelInfo(context);
         if (channelInfo == null) {
             return defaultChannel;
