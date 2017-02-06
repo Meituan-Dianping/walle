@@ -22,11 +22,7 @@ public final class WalleChannelReader {
      */
     @Nullable
     public static String getChannel(@NonNull final Context context) {
-        final ChannelInfo channelInfo = getChannelInfo(context);
-        if (channelInfo == null) {
-            return null;
-        }
-        return channelInfo.getChannel();
+        return getChannel(context, null);
     }
 
     /**
@@ -44,7 +40,7 @@ public final class WalleChannelReader {
         }
         return channelInfo.getChannel();
     }
-    
+
     /**
      * get channel info (include channle & extraInfo)
      *
