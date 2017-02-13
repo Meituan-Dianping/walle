@@ -34,3 +34,7 @@ ext {
     buildToolsVersion = '24.0.1'
     javaVersion = JavaVersion.VERSION_1_7
 }
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
