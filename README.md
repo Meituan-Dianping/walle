@@ -37,6 +37,44 @@ dependencies {
 }
 ```
 
+#### 配置插件
+
+```groovy
+walle {
+    // 指定渠道包的输出路径
+    apkOutputFolder = new File("${project.buildDir}/outputs/channels");
+    // 定制渠道包的APK的文件名称
+    apkFileNameFormat = '${appName}-${packageName}-${channel}-${buildType}-v${versionName}-${versionCode}-${buildTime}.apk';
+    // 配置渠道文件列表，也可以通过channelList来配置
+    channelFile = "./channel";
+}
+```
+
+目前插件支持下面几个配置项：
+
+* apkOutputFolder：指定渠道包的输出路径， 默认值为`new File("${project.buildDir}/outputs/apk")`
+* apkFileNameFormat：定制渠道包的APK的文件名称, 默认值为`'${appName}-${buildType}-${channel}.apk'`
+* channelList：和channelFile是互斥配置项
+* channelFile：和channelList是互斥配置项
+* extraInfo：以`key:value`形式提供，多个以`,`分隔
+
+可以通过`apkFileNameFormat`来指定渠道打包输出的APK文件名格式，默认文件名格式是： `${appName}-${buildType}-${channel}.apk`
+
+可使用以下变量:
+                     
+```
+    projectName - 项目名字
+    appName - App模块名字
+    packageName - applicationId (App包名packageName)
+    buildType - buildType (release/debug等)
+    channel - channel名称 (对应渠道打包中的渠道名字)
+    versionName - versionName (显示用的版本号)
+    versionCode - versionCode (内部版本号)
+    buildTime - buildTime (编译构建日期时间)
+    fileSHA1 - fileSHA1 (最终APK文件的SHA1哈希值)
+```                     
+                     
+
 #### 如何获取渠道信息
 
 在需要渠道等信息时可以通过下面代码进行获取

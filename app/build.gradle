@@ -22,8 +22,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
 
-        versionCode 1
-        versionName "0.0.1"
+        versionCode 101
+        versionName "1.0.1"
         applicationId "com.meituan.android.walle.sample"
     }
 
@@ -52,12 +52,7 @@ android {
             signingConfig signingConfigs.sankuai
         }
     }
-//    productFlavors {
-//        meituan {
-//            applicationId "com.example.myapp.full"
-//            versionName "1.0-full"
-//        }
-//    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
@@ -73,4 +68,10 @@ dependencies {
     compile 'com.android.support:support-v4:24.1.1'
     compile 'com.android.support:appcompat-v7:24.1.1'
     compile project(':library')
+}
+
+walle {
+    apkOutputFolder = new File("${project.buildDir}/outputs/channels");
+    apkFileNameFormat = '${appName}-${packageName}-${channel}-${buildType}-v${versionName}-${versionCode}-${buildTime}.apk';
+    channelFile = "./channel";
 }
