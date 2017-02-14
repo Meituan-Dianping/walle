@@ -25,6 +25,7 @@ android {
         versionCode 101
         versionName "1.0.1"
         applicationId "com.meituan.android.walle.sample"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     signingConfigs {
@@ -65,9 +66,16 @@ configurations.all {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile project(':library')
     compile 'com.android.support:support-v4:24.1.1'
     compile 'com.android.support:appcompat-v7:24.1.1'
-    compile project(':library')
+    compile 'commons-io:commons-io:2.5'
+
+    androidTestCompile project(':payload_writer')
+    androidTestCompile 'junit:junit:4.12'
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
 }
 
 walle {
