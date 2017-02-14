@@ -70,8 +70,8 @@ dependencies {
     compile project(':library')
 }
 
-//walle {
-//    apkOutputFolder = new File("${project.buildDir}/outputs/channels");
-//    apkFileNameFormat = '${appName}-${packageName}-${channel}-${buildType}-v${versionName}-${versionCode}-${buildTime}.apk';
-//    channelFile = "./channel";
-//}
+walle {
+    apkOutputFolder = new File("${project.buildDir}/outputs/channels");
+    apkFileNameFormat = '${appName}-${packageName}-${channel}-${buildType}-v${versionName}-${versionCode}-${buildTime}.apk';
+    channelFile = "./channel";
+}
