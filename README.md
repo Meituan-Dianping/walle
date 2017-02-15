@@ -85,14 +85,14 @@ String channel = WalleChannelReader.getChannel(this.getApplicationContext());
 
 #### 如何生成渠道包
 
-生成渠道包的方式是和assemble指令结合，可以通过传入参数决定是否生成渠道包，渠道包的生成目录存放在 `build/outputs/apk/`
+生成渠道包的方式是和`assemble${variantName}Channels`指令结合，可以通过传入参数决定是否生成渠道包，也可以通过在`build.gradle`中的walle闭包中配置相应的参数，渠道包的生成目录默认存放在 `build/outputs/apk/`，也可以通过`walle`闭包中的`apkOutputFolder`参数来指定输出目录
 
 下面是各类用法示例：
 
-* 生成单个渠道包 `./gradlew clean assembleRelease -PchannelList=meituan`
-* 支持 productFlavors `./gradlew clean assembleMeituanRelease -PchannelList=meituan`
-* 生成多个渠道包 `./gradlew clean assembleRelease -PchannelList=meituan,dianping`
-* 通过渠道配置文件来生成渠道包 `./gradlew clean assembleRelease -PchannelFile=channel`
+* 生成单个渠道包 `./gradlew clean assembleReleaseChannels -PchannelList=meituan`
+* 支持 productFlavors `./gradlew clean assembleMeituanReleaseChannels -PchannelList=meituan`
+* 生成多个渠道包 `./gradlew clean assembleReleaseChannels -PchannelList=meituan,dianping`
+* 通过渠道配置文件来生成渠道包 `./gradlew clean assembleReleaseChannels -PchannelFile=channel`
 
 渠道信息的配置文件支持配置相对路径，详见：[配置文件示例](app/channel)，同时配置文件支持使用#号添加注释。
 
@@ -103,7 +103,7 @@ String channel = WalleChannelReader.getChannel(this.getApplicationContext());
 如果想插入除渠道以外的其他信息，请在生成渠道包时使用
 
 ```
-./gradlew clean assembleRelease -PchannelList=meituan -PextraInfo=buildtime:20161212,hash:xxxxxxx
+./gradlew clean assembleReleaseChannels -PchannelList=meituan -PextraInfo=buildtime:20161212,hash:xxxxxxx
 ```
 
 extraInfo以`key:value`形式提供，多个以`,`分隔。
