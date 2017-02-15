@@ -54,8 +54,8 @@ walle {
 
 * apkOutputFolder：指定渠道包的输出路径， 默认值为`new File("${project.buildDir}/outputs/apk")`
 * apkFileNameFormat：定制渠道包的APK的文件名称, 默认值为`'${appName}-${buildType}-${channel}.apk'`
-* channelList：和channelFile是互斥配置项
-* channelFile：和channelList是互斥配置项
+* channelList：渠道信息列表
+* channelFile：包含渠道配置信息的文件路径
 * extraInfo：以`key:value`形式提供，多个以`,`分隔
 
 可以通过`apkFileNameFormat`来指定渠道打包输出的APK文件名格式，默认文件名格式是： `${appName}-${buildType}-${channel}.apk`
