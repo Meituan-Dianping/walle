@@ -40,14 +40,14 @@ class GradlePlugin implements org.gradle.api.Plugin<Project> {
                     throw new ProjectConfigurationException("Plugin requires 'APK Signature Scheme v2 Enabled' for ${variant.name}.", null);
                 }
 
-                ChannelMaker channelMaker = project.tasks.create("assemble${variantName}V2SignatureSchemeChannel", ChannelMaker);
+                ChannelMaker channelMaker = project.tasks.create("assemble${variantName}Channels", ChannelMaker);
                 def File apkFile = variant.outputs[0].outputFile
                 channelMaker.targetProject = project;
                 channelMaker.variant = variant;
                 channelMaker.apkFile = apkFile;
                 channelMaker.setup();
 
-                variant.assemble.finalizedBy channelMaker;
+                channelMaker.dependsOn variant.assemble;
             }
         }
     }
