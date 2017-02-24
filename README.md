@@ -138,6 +138,9 @@ String value = WalleChannelReader.get(context, "buildtime");
 * [APK Signing Block读取模块: payload_reader](payload_reader/README.md)
 * [APK Signing Block写入模块: payload_writer](payload_writer/README.md)
 
+## Q&A
+- [360加固失效](https://github.com/Meituan-Dianping/walle/wiki/360%E5%8A%A0%E5%9B%BA%E5%A4%B1%E6%95%88%EF%BC%9F)？
+
 ## 原理介绍
 
 对该工具的原理感兴趣的同学，可以移步[美团Android新一代渠道包生成工具](http://tech.meituan.com/android-apk-v2-signature-scheme.html)进行了解。
