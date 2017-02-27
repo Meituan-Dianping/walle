@@ -113,8 +113,7 @@ class ChannelMaker extends DefaultTask {
 
         if (channelListProperty != null && channelListProperty.trim().length() > 0) {
             channelList.addAll(channelListProperty.split(",").collect { it.trim() })
-        }
-        if (channelFileProperty != null && channelFileProperty.trim().length() > 0) {
+        } else if (channelFileProperty != null && channelFileProperty.trim().length() > 0) {
             channelList.addAll(getChannelListFromFile(targetProject, channelFileProperty))
         }
 
