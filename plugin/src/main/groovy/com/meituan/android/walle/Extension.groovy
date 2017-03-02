@@ -24,6 +24,7 @@ class Extension {
      * 7. versionCode
      * 8. buildTime
      * 9. fileSHA1
+     * 10. flavorName
      *
      * default value: '${appName}-${buildType}-${channel}.apk'
      *
