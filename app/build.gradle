@@ -27,6 +27,15 @@ android {
         applicationId "com.meituan.android.walle.sample"
     }
 
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'armeabi', 'x86'
+            universalApk false
+        }
+    }
+
     signingConfigs {
         sankuai {
             storeFile file("keystore/meituan-debug.keystore")
