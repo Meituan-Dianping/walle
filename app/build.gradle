@@ -57,6 +57,13 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
     }
+
+    productFlavors {
+        china {
+        }
+        international {
+        }
+    }
 }
 
 configurations.all {
@@ -72,6 +79,6 @@ dependencies {
 
 walle {
     apkOutputFolder = new File("${project.buildDir}/outputs/channels");
-    apkFileNameFormat = '${appName}-${packageName}-${channel}-${buildType}-v${versionName}-${versionCode}-${buildTime}.apk';
+    apkFileNameFormat = '${appName}-${packageName}-${channel}-${buildType}-v${versionName}-${versionCode}-${buildTime}-${flavorName}.apk';
     channelFile = "./channel";
 }

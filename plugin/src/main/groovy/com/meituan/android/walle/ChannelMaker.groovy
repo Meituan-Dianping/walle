@@ -73,7 +73,8 @@ class ChannelMaker extends DefaultTask {
                 'versionName': variant.versionName,
                 'versionCode': variant.versionCode,
                 'packageName': variant.applicationId,
-                'fileSHA1'   : getFileHash(apkFile)
+                'fileSHA1'   : getFileHash(apkFile),
+                'flavorName' : variant.flavorName
         ]
 
         channelList.each { channel -> generateChannelApk(channelOutputFolder, nameVariantMap, channel, extraInfo) }

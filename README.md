@@ -72,6 +72,7 @@ walle {
     versionCode - versionCode (内部版本号)
     buildTime - buildTime (编译构建日期时间)
     fileSHA1 - fileSHA1 (最终APK文件的SHA1哈希值)
+    flavorName - 编译构建 productFlavors 名
 ```                     
                      
 
