@@ -3,6 +3,7 @@ package com.meituan.android.walle
 import com.android.apksigner.core.ApkVerifier
 import com.android.apksigner.core.internal.util.ByteBufferDataSource
 import com.android.apksigner.core.util.DataSource
+import com.android.build.FilterData
 import com.android.build.gradle.api.BaseVariant
 import com.google.common.base.Charsets
 import com.google.common.hash.HashCode
@@ -30,8 +31,6 @@ class ChannelMaker extends DefaultTask {
     public BaseVariant variant;
     @Input
     public Project targetProject;
-    @Input
-    public File apkFile;
 
     public void setup() {
         description "Make Multi-Channel"
@@ -44,9 +43,6 @@ class ChannelMaker extends DefaultTask {
 
     @TaskAction
     public void packaging() {
-        if (apkFile == null || !apkFile.exists()) {
-            throw new GradleException("${apkFile} is not existed!");
-        }
         Extension extension = Extension.getConfig(targetProject);
 
         def channelList = getChannelList(extension)
@@ -55,31 +51,59 @@ class ChannelMaker extends DefaultTask {
         }
         def extraInfo = getChannelExtraInfo(extension)
 
-        checkV2Signature()
-
         long startTime = System.currentTimeMillis();
 
-        File channelOutputFolder = apkFile.parentFile;
-        if (extension.apkOutputFolder instanceof File) {
-            channelOutputFolder = extension.apkOutputFolder;
-            if (!channelOutputFolder.parentFile.exists()) {
-                channelOutputFolder.parentFile.mkdirs();
+        def iterator = variant.outputs.iterator();
+        while (iterator.hasNext()) {
+            def it = iterator.next();
+            def apkFile = it.outputFile
+            def apiIdentifier = null;
+            if (!it.outputs[0].filters.isEmpty()) {
+                def tempIterator = it.outputs[0].filters.iterator();
+                while (tempIterator.hasNext()) {
+                    FilterData filterData = tempIterator.next();
+                    if (filterData.filterType == "ABI") {
+                        apiIdentifier = filterData.identifier
+                        break;
+                    }
+                }
             }
+            if (apkFile == null || !apkFile.exists()) {
+                throw new GradleException("${apkFile} is not existed!");
+            }
+
+            checkV2Signature(apkFile)
+
+            File channelOutputFolder = apkFile.parentFile;
+            if (extension.apkOutputFolder instanceof File) {
+                channelOutputFolder = extension.apkOutputFolder;
+                if (!channelOutputFolder.parentFile.exists()) {
+                    channelOutputFolder.parentFile.mkdirs();
+                }
+            }
+
+            if (apiIdentifier != null && apiIdentifier.length() > 0) {
+                channelOutputFolder = new File(channelOutputFolder, apiIdentifier);
+                if (!channelOutputFolder.parentFile.exists()) {
+                    channelOutputFolder.parentFile.mkdirs();
+                }
+            }
+            def nameVariantMap = [
+                    'appName'    : targetProject.name,
+                    'projectName': targetProject.rootProject.name,
+                    'buildType'  : variant.buildType.name,
+                    'versionName': variant.versionName,
+                    'versionCode': variant.versionCode,
+                    'packageName': variant.applicationId,
+                    'fileSHA1'   : getFileHash(apkFile),
+                    'flavorName' : variant.flavorName
+            ]
+
+            channelList.each { channel -> generateChannelApk(apkFile, channelOutputFolder, nameVariantMap, channel, extraInfo) }
         }
-        def nameVariantMap = [
-                'appName'    : targetProject.name,
-                'projectName': targetProject.rootProject.name,
-                'buildType'  : variant.buildType.name,
-                'versionName': variant.versionName,
-                'versionCode': variant.versionCode,
-                'packageName': variant.applicationId,
-                'fileSHA1'   : getFileHash(apkFile),
-                'flavorName' : variant.flavorName
-        ]
 
-        channelList.each { channel -> generateChannelApk(channelOutputFolder, nameVariantMap, channel, extraInfo) }
-
-        targetProject.logger.lifecycle("APK Signature Scheme v2 Channel Maker takes about " + (System.currentTimeMillis() - startTime) + " milliseconds");
+        targetProject.logger.lifecycle("APK Signature Scheme v2 Channel Maker takes about " + (
+                System.currentTimeMillis() - startTime) + " milliseconds");
     }
 
     List<String> getChannelList(Extension extension) {
@@ -170,7 +194,7 @@ class ChannelMaker extends DefaultTask {
         return channelList
     }
 
-    def generateChannelApk(File channelOutputFolder, Map nameVariantMap, channel, extraInfo) {
+    def generateChannelApk(File apkFile, File channelOutputFolder, Map nameVariantMap, channel, extraInfo) {
         Extension extension = Extension.getConfig(targetProject);
 
         def buildTime = new SimpleDateFormat('yyyyMMdd-HHmmss').format(new Date());
@@ -192,7 +216,7 @@ class ChannelMaker extends DefaultTask {
         ChannelWriter.put(channelApkFile, channel, extraInfo)
     }
 
-    def checkV2Signature() {
+    def checkV2Signature(File apkFile) {
         FileInputStream fIn;
         FileChannel fChan;
         try {
@@ -228,4 +252,5 @@ class ChannelMaker extends DefaultTask {
         }
         return hashCode.toString();
     }
+
 }

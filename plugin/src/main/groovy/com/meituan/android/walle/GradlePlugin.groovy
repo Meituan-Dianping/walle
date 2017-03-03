@@ -45,10 +45,8 @@ class GradlePlugin implements org.gradle.api.Plugin<Project> {
                 }
 
                 ChannelMaker channelMaker = project.tasks.create("assemble${variantName}Channels", ChannelMaker);
-                def File apkFile = variant.outputs[0].outputFile
                 channelMaker.targetProject = project;
                 channelMaker.variant = variant;
-                channelMaker.apkFile = apkFile;
                 channelMaker.setup();
 
                 channelMaker.dependsOn variant.assemble;

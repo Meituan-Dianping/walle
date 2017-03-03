@@ -9,7 +9,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.2.0'
-        classpath "com.meituan.android.walle:plugin:latest.integration"
+        classpath "com.meituan.android.walle:plugin:1.0.5.1-SNAPSHOT"
     }
 }
 
@@ -25,6 +25,15 @@ android {
         versionCode 101
         versionName "1.0.1"
         applicationId "com.meituan.android.walle.sample"
+    }
+
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'armeabi', 'x86'
+            universalApk false
+        }
     }
 
     signingConfigs {
