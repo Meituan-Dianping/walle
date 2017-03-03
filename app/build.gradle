@@ -9,7 +9,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.2.0'
-        classpath "com.meituan.android.walle:plugin:1.0.5.1-SNAPSHOT"
+        classpath "com.meituan.android.walle:plugin:latest.integration"
     }
 }
 
