@@ -67,12 +67,12 @@ android {
         targetCompatibility JavaVersion.VERSION_1_7
     }
 
-    productFlavors {
-        china {
-        }
-        international {
-        }
-    }
+//    productFlavors {
+//        china {
+//        }
+//        international {
+//        }
+//    }
 }
 
 configurations.all {
