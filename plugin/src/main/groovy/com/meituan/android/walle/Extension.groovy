@@ -31,14 +31,15 @@ class Extension {
      */
     String apkFileNameFormat
 
-    String channelList;
-
-    String channelFile;
+    /**
+     * only channel
+     */
+    File channelFile;
 
     /**
-     * In the form of key: value and separate by comma, for example: extraInfo=buildtime:20161212,hash:xxxxxxx
+     * channel & extraInfo config
      */
-    String extraInfo;
+    File configFile;
 
     Extension(Project project) {
         apkOutputFolder = null;

@@ -10,6 +10,7 @@ import com.google.common.hash.HashCode
 import com.google.common.hash.HashFunction
 import com.google.common.hash.Hashing
 import com.google.common.io.Files
+import com.google.gson.Gson
 import groovy.text.SimpleTemplateEngine
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
@@ -37,19 +38,9 @@ class ChannelMaker extends DefaultTask {
         group "Package"
     }
 
-    private static final String PROPERTY_CHANNEL_FILE = 'channelFile'
-    private static final String PROPERTY_CHANNEL_LIST = 'channelList'
-    private static final String PROPERTY_EXTRA_INFO = 'extraInfo'
-
     @TaskAction
     public void packaging() {
         Extension extension = Extension.getConfig(targetProject);
-
-        def channelList = getChannelList(extension)
-        if (channelList.isEmpty()) {
-            return;
-        }
-        def extraInfo = getChannelExtraInfo(extension)
 
         long startTime = System.currentTimeMillis();
 
@@ -99,90 +90,37 @@ class ChannelMaker extends DefaultTask {
                     'flavorName' : variant.flavorName
             ]
 
-            channelList.each { channel -> generateChannelApk(apkFile, channelOutputFolder, nameVariantMap, channel, extraInfo) }
+            if (extension.configFile instanceof File) {
+                if (!extension.configFile.exists()) {
+                    project.logger.warn("config file does not exist")
+                    return
+                }
+                WalleConfig config = new Gson().fromJson(new FileReader(extension.configFile), WalleConfig.class)
+                def defaultExtraInfo = config.getDefaultExtraInfo()
+                config.getChannelInfoList().each { channelInfo ->
+                    def extraInfo = channelInfo.extraInfo
+                    if (channelInfo.extraInfo == null) {
+                        extraInfo = defaultExtraInfo
+                    }
+                    generateChannelApk(apkFile, channelOutputFolder, nameVariantMap, channelInfo.channel, extraInfo)
+                }
+            } else if (extension.channelFile instanceof File) {
+                if (!extension.channelFile.exists()) {
+                    project.logger.warn("channel file does not exist")
+                    return
+                }
+
+                getChannelListFromFile(extension.channelFile).each { channel -> generateChannelApk(apkFile, channelOutputFolder, nameVariantMap, channel, null) }
+            }
         }
 
         targetProject.logger.lifecycle("APK Signature Scheme v2 Channel Maker takes about " + (
                 System.currentTimeMillis() - startTime) + " milliseconds");
     }
 
-    List<String> getChannelList(Extension extension) {
-        def channelList = new ArrayList<String>()
-
-        String channelListProperty;
-        String channelFileProperty;
-
-        boolean hasChannelList = targetProject.hasProperty(PROPERTY_CHANNEL_LIST)
-        if (!hasChannelList) {
-            if (extension.channelList != null && extension.channelList.length() > 0) {
-                channelListProperty = extension.channelList
-                hasChannelList = true;
-            }
-        } else {
-            channelListProperty = targetProject.getProperties().get(PROPERTY_CHANNEL_LIST);
-        }
-
-        boolean hasChannelFile = targetProject.hasProperty(PROPERTY_CHANNEL_FILE)
-        if (!hasChannelFile) {
-            if (extension.channelFile != null && extension.channelFile.length() > 0) {
-                channelFileProperty = extension.channelFile;
-                hasChannelList = true;
-            }
-        } else {
-            channelFileProperty = targetProject.getProperties().get(PROPERTY_CHANNEL_FILE);
-        }
-
-        if (!hasChannelFile && !hasChannelList) {
-            return channelList;
-        }
-
-        if (channelListProperty != null && channelListProperty.trim().length() > 0) {
-            channelList.addAll(channelListProperty.split(",").collect { it.trim() })
-        } else if (channelFileProperty != null && channelFileProperty.trim().length() > 0) {
-            channelList.addAll(getChannelListFromFile(targetProject, channelFileProperty))
-        }
-
-        return channelList;
-    }
-
-    def getChannelExtraInfo(Extension extension) {
-        boolean hasExtraInfo = targetProject.hasProperty(PROPERTY_EXTRA_INFO)
-        def extraInfo = null
-
-        String extraString;
-        if (!hasExtraInfo) {
-            extraString = extension.extraInfo;
-        } else {
-            extraString = targetProject.getProperties().get(PROPERTY_EXTRA_INFO)
-        }
-
-        if (extraString != null && extraString.trim().length() > 0) {
-            def keyValues = extraString.split(",").collect {
-                it.trim()
-            }
-            extraInfo = keyValues.findAll {
-                it.split(":").size() == 2
-            }.collectEntries([:]) { keyValue ->
-                def data = keyValue.split(":")
-                [data[0], data[1]]
-            }
-        }
-
-        return extraInfo;
-    }
-
-    static def getChannelListFromFile(Project project, channelFileProperty) {
+    static def getChannelListFromFile(File channelFile) {
         def channelList = []
-        if (channelFileProperty == null || channelFileProperty.trim().length() == 0) {
-            return channelList
-        }
-        def channelFile = new File(channelFileProperty.trim())
-
-        if (!channelFile.exists()) {
-            project.logger.warn("channel file does not exist")
-            return channelList
-        } else {
-            channelFile.eachLine { line ->
+        channelFile.eachLine { line ->
                 def lineTrim = line.trim()
                 if (lineTrim.length() != 0 && !lineTrim.startsWith("#")) {
                     def channel = line.split("#").first().trim()
@@ -190,7 +128,6 @@ class ChannelMaker extends DefaultTask {
                         channelList.add(channel)
                 }
             }
-        }
         return channelList
     }
 

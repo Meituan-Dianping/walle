@@ -12,6 +12,7 @@ dependencies {
     compile 'com.android.tools.build:gradle:2.2.0'
     compile 'org.json:json:20080701'// Groovy里有，但是如果这里不依赖报JsonException not found，还是强制依赖下吧。
     compile project(':payload_writer')
+    compile 'com.google.code.gson:gson:2.8.0'
 }
 
 configurations.all {
