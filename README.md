@@ -45,36 +45,30 @@ walle {
     apkOutputFolder = new File("${project.buildDir}/outputs/channels");
     // 定制渠道包的APK的文件名称
     apkFileNameFormat = '${appName}-${packageName}-${channel}-${buildType}-v${versionName}-${versionCode}-${buildTime}.apk';
-    // 配置渠道文件列表，也可以通过channelList来配置
-    channelFile = "./channel";
+    // 渠道配置文件
+    channelFile = new File("${project.getProjectDir()}/channel")
 }
 ```
 
-目前插件支持下面几个配置项：
+配置项具体解释：
 
 * apkOutputFolder：指定渠道包的输出路径， 默认值为`new File("${project.buildDir}/outputs/apk")`
-* apkFileNameFormat：定制渠道包的APK的文件名称, 默认值为`'${appName}-${buildType}-${channel}.apk'`
-* channelList：渠道信息列表
-* channelFile：包含渠道配置信息的文件路径
-* extraInfo：以`key:value`形式提供，多个以`,`分隔
-
-可以通过`apkFileNameFormat`来指定渠道打包输出的APK文件名格式，默认文件名格式是： `${appName}-${buildType}-${channel}.apk`
-
-可使用以下变量:
-                     
-```
-    projectName - 项目名字
-    appName - App模块名字
-    packageName - applicationId (App包名packageName)
-    buildType - buildType (release/debug等)
-    channel - channel名称 (对应渠道打包中的渠道名字)
-    versionName - versionName (显示用的版本号)
-    versionCode - versionCode (内部版本号)
-    buildTime - buildTime (编译构建日期时间)
-    fileSHA1 - fileSHA1 (最终APK文件的SHA1哈希值)
-    flavorName - 编译构建 productFlavors 名
-```                     
-                     
+* apkFileNameFormat：定制渠道包的APK的文件名称, 默认值为`'${appName}-${buildType}-${channel}.apk'`  
+	可使用以下变量:
+                  
+	```
+	    projectName - 项目名字
+	    appName - App模块名字
+	    packageName - applicationId (App包名packageName)
+	    buildType - buildType (release/debug等)
+	    channel - channel名称 (对应渠道打包中的渠道名字)
+	    versionName - versionName (显示用的版本号)
+	    versionCode - versionCode (内部版本号)
+	    buildTime - buildTime (编译构建日期时间)
+	    fileSHA1 - fileSHA1 (最终APK文件的SHA1哈希值)
+	    flavorName - 编译构建 productFlavors 名
+	```  
+* channelFile：包含渠道配置信息的文件路径。 具体内容格式详见：[渠道配置文件示例](app/channel)，支持使用#号添加注释。
 
 #### 如何获取渠道信息
 
@@ -86,32 +80,32 @@ String channel = WalleChannelReader.getChannel(this.getApplicationContext());
 
 #### 如何生成渠道包
 
-生成渠道包的方式是和`assemble${variantName}Channels`指令结合，可以通过传入参数决定是否生成渠道包，也可以通过在`build.gradle`中的walle闭包中配置相应的参数，渠道包的生成目录默认存放在 `build/outputs/apk/`，也可以通过`walle`闭包中的`apkOutputFolder`参数来指定输出目录
+生成渠道包的方式是和`assemble${variantName}Channels`指令结合，渠道包的生成目录默认存放在 `build/outputs/apk/`，也可以通过`walle`闭包中的`apkOutputFolder`参数来指定输出目录
 
-下面是各类用法示例：
+用法示例：
 
-* 生成单个渠道包 `./gradlew clean assembleReleaseChannels -PchannelList=meituan`
-* 支持 productFlavors `./gradlew clean assembleMeituanReleaseChannels -PchannelList=meituan`
-* 生成多个渠道包 `./gradlew clean assembleReleaseChannels -PchannelList=meituan,dianping`
-* 通过渠道配置文件来生成渠道包 `./gradlew clean assembleReleaseChannels -PchannelFile=channel`
-
-渠道信息的配置文件支持配置相对路径，详见：[配置文件示例](app/channel)，同时配置文件支持使用#号添加注释。
+* 生成渠道包 `./gradlew clean assembleReleaseChannels`
+* 支持 productFlavors `./gradlew clean assembleMeituanReleaseChannels`
 
 #### 更多用法
 
 ##### 插入额外信息
 
-如果想插入除渠道以外的其他信息，请在生成渠道包时使用
+`channelFile`只支持渠道写入，如果想插入除渠道以外的其他信息，请在walle配置中使用`configFile`
 
 ```
-./gradlew clean assembleReleaseChannels -PchannelList=meituan -PextraInfo=buildtime:20161212,hash:xxxxxxx
+walle {
+    // 渠道&额外信息配置文件，与channelFile互斥
+	configFile = new File("${project.getProjectDir()}/config.json")
+}
 ```
 
-extraInfo以`key:value`形式提供，多个以`,`分隔。
+`configFile`是包含渠道信息和额外信息的配置文件路径。  
+配置文件采用json格式，支持为每个channel单独配置额外的写入信息。具体内容格式详见：[渠道&额外信息配置文件示例](app/config.json) 。
 
 注意：
 
-- extraInfo需要搭配channelList或者channelFile使用，plugin不支持只写入extraInfo。
+- 此配置项与`channelFile`功能互斥，开发者在使用时选择其一即可，两者都存在时`configFile`优先执行。
 - extraInfo 不要出现以`channel`为key的情况
 
 而对应的渠道信息获取方式如下：
