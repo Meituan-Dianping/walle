@@ -24,6 +24,7 @@ dependencies {
     compile 'commons-io:commons-io:2.5'
     compile project(':payload_writer')
     compile 'org.json:json:20080701' //与gradle plugin使用同一版本
+    compile 'com.google.code.gson:gson:2.8.0'
 }
 
 sourceCompatibility = javaVersion
