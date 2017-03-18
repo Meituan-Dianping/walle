@@ -35,12 +35,12 @@ java -jar walle-cli-all.jar put -c meituan /Users/Meituan/Downloads/app.apk /Use
 ```
 
 #### 批量写入
-
+##### 命令行指定渠道列表
 ```
 java -jar walle-cli-all.jar batch -c meituan,meituan2,meituan3 /Users/walle/app/build/outputs/apk/app.apk
 ```
 
-指定渠道配置文件
+##### 指定渠道配置文件
 
 ```
 java -jar walle-cli-all.jar batch -f /Users/Meituan/walle/app/channel  /Users/Meituan/walle/app/build/outputs/apk/app.apk
@@ -50,7 +50,14 @@ java -jar walle-cli-all.jar batch -f /Users/Meituan/walle/app/channel  /Users/Me
 
 输出目录可指定，不指定时默认在原apk包同目录下。
 
+##### 指定渠道&额外信息配置文件
+```
+java -jar walle-cli-all.jar batch2 -f /Users/Meituan/walle/app/config.json  /Users/Meituan/walle/app/build/outputs/apk/app.apk
+```
 
+[配置文件示例](../app/config.json)
+
+输出目录可指定，不指定时默认在原apk包同目录下。
 
 ## 更多用法
 

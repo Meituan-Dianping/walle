@@ -11,7 +11,7 @@ public class WalleConfig {
         return channelInfoList;
     }
 
-    public void setChannelInfoList(List<ChannelInfo> channelInfosList) {
+    public void setChannelInfoList(final List<ChannelInfo> channelInfosList) {
         this.channelInfoList = channelInfosList;
     }
 
@@ -21,7 +21,7 @@ public class WalleConfig {
         return defaultExtraInfo;
     }
 
-    public void setDefaultExtraInfo(Map<String, String> defaultExtraInfo) {
+    public void setDefaultExtraInfo(final Map<String, String> defaultExtraInfo) {
         this.defaultExtraInfo = defaultExtraInfo;
     }
 
@@ -33,7 +33,7 @@ public class WalleConfig {
             return alias;
         }
 
-        public void setAlias(String alias) {
+        public void setAlias(final String alias) {
             this.alias = alias;
         }
 
@@ -43,7 +43,7 @@ public class WalleConfig {
             return channel;
         }
 
-        public void setChannel(String channel) {
+        public void setChannel(final String channel) {
             this.channel = channel;
         }
 
@@ -51,7 +51,7 @@ public class WalleConfig {
             return extraInfo;
         }
 
-        public void setExtraInfo(Map<String, String> extraInfo) {
+        public void setExtraInfo(final Map<String, String> extraInfo) {
             this.extraInfo = extraInfo;
         }
     }

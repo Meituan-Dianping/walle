@@ -2,11 +2,12 @@ package com.meituan.android.walle;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
+import com.meituan.android.walle.commands.Batch2Command;
 import com.meituan.android.walle.commands.IWalleCommand;
 import com.meituan.android.walle.commands.RemoveCommand;
 import com.meituan.android.walle.commands.ShowCommand;
-import com.meituan.android.walle.commands.WriteChannelCommand;
-import com.meituan.android.walle.commands.WriteChannelsCommand;
+import com.meituan.android.walle.commands.PutCommand;
+import com.meituan.android.walle.commands.BatchCommand;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,8 +25,9 @@ public final class Main {
         final Map<String, IWalleCommand> subCommandList = new HashMap<String, IWalleCommand>();
         subCommandList.put("show", new ShowCommand());
         subCommandList.put("rm", new RemoveCommand());
-        subCommandList.put("put", new WriteChannelCommand());
-        subCommandList.put("batch", new WriteChannelsCommand());
+        subCommandList.put("put", new PutCommand());
+        subCommandList.put("batch", new BatchCommand());
+        subCommandList.put("batch2", new Batch2Command());
 
         final WalleCommandLine walleCommandLine = new WalleCommandLine();
         final JCommander commander = new JCommander(walleCommandLine);
