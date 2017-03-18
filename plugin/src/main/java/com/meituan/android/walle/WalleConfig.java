@@ -27,16 +27,6 @@ public class WalleConfig {
 
     public static class ChannelInfo {
         private String channel;
-        private String alias;
-
-        public String getAlias() {
-            return alias;
-        }
-
-        public void setAlias(String alias) {
-            this.alias = alias;
-        }
-
         private Map<String, String> extraInfo;
 
         public String getChannel() {
