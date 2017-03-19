@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @Parameters(commandDescription = "put channel info into apk")
-public class WriteChannelCommand implements IWalleCommand{
+public class PutCommand implements IWalleCommand{
 
     @Parameter(required = true, description = "inputFile [outputFile]", arity = 2, converter = FileConverter.class)
     private List<File> files;
