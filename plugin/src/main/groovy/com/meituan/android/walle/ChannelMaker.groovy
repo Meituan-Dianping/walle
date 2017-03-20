@@ -99,10 +99,10 @@ class ChannelMaker extends DefaultTask {
                 def defaultExtraInfo = config.getDefaultExtraInfo()
                 config.getChannelInfoList().each { channelInfo ->
                     def extraInfo = channelInfo.extraInfo
-                    if (extraInfo == null) {
+                    if (channelInfo.extraInfo == null) {
                         extraInfo = defaultExtraInfo
                     }
-                    generateChannelApk(apkFile, channelOutputFolder, nameVariantMap, channelInfo.channel, extraInfo, channelInfo.alias)
+                    generateChannelApk(apkFile, channelOutputFolder, nameVariantMap, channelInfo.channel, extraInfo)
                 }
             } else if (extension.channelFile instanceof File) {
                 if (!extension.channelFile.exists()) {
@@ -110,7 +110,7 @@ class ChannelMaker extends DefaultTask {
                     return
                 }
 
-                getChannelListFromFile(extension.channelFile).each { channel -> generateChannelApk(apkFile, channelOutputFolder, nameVariantMap, channel, null, null) }
+                getChannelListFromFile(extension.channelFile).each { channel -> generateChannelApk(apkFile, channelOutputFolder, nameVariantMap, channel, null) }
             }
         }
 
@@ -131,20 +131,19 @@ class ChannelMaker extends DefaultTask {
         return channelList
     }
 
-    def generateChannelApk(File apkFile, File channelOutputFolder, Map nameVariantMap, channel, extraInfo, alias) {
+    def generateChannelApk(File apkFile, File channelOutputFolder, Map nameVariantMap, channel, extraInfo) {
         Extension extension = Extension.getConfig(targetProject);
 
         def buildTime = new SimpleDateFormat('yyyyMMdd-HHmmss').format(new Date());
-        def channelName = alias == null ? channel : alias
         nameVariantMap.put("buildTime", buildTime);
-        nameVariantMap.put('channel', channelName);
+        nameVariantMap.put('channel', channel);
 
         String fileName = apkFile.getName();
         if (fileName.endsWith(DOT_APK)) {
             fileName = fileName.substring(0, fileName.lastIndexOf(DOT_APK));
         }
 
-        String apkFileName = "${fileName}-${channelName}${DOT_APK}";
+        String apkFileName = "${fileName}-${channel}${DOT_APK}";
         if (extension.apkFileNameFormat != null && extension.apkFileNameFormat.length() > 0) {
             apkFileName = new SimpleTemplateEngine().createTemplate(extension.apkFileNameFormat).make(nameVariantMap).toString()
         };

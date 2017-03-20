@@ -11,11 +11,6 @@
   "channelInfoList": [
     {
       "channel": "meituan", // 此channel将使用自己声明的extraInfo
-      /**
-      此alias可以做到写入apk的channel是meituan，而打包时输出的文件名是美团
-      注意：alias不声明时，walle配置apkFileNameFormat中channel就是channel，否则为alias
-      */
-      "alias" : "美团",
       "extraInfo": {
         "buildtime": "20161212",
         "hash": "123"
