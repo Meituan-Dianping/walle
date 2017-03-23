@@ -151,9 +151,11 @@ class ChannelMaker extends DefaultTask {
         nameVariantMap.put('channel', channelName);
         nameVariantMap.put('fileSHA1', getFileHash(channelApkFile));
         if (extension.apkFileNameFormat != null && extension.apkFileNameFormat.length() > 0) {
-            apkFileName = new SimpleTemplateEngine().createTemplate(extension.apkFileNameFormat).make(nameVariantMap).toString()
-            FileUtils.copyFile(channelApkFile, new File(apkFileName, channelOutputFolder));
-            channelApkFile.delete();
+            def newApkFileName = new SimpleTemplateEngine().createTemplate(extension.apkFileNameFormat).make(nameVariantMap).toString()
+            if (!newApkFileName.contentEquals(apkFileName)) {
+                FileUtils.copyFile(channelApkFile, new File(newApkFileName, channelOutputFolder));
+                channelApkFile.delete();
+            }
         }
     }
 
