@@ -55,7 +55,7 @@ public class Batch2Command implements IWalleCommand {
                                 }
                                 break;
                             case WalleConfig.STRATEGY_ALWAYS:
-                                Map<String, String> temp = new HashMap<>();
+                                final Map<String, String> temp = new HashMap<>();
                                 if (defaultExtraInfo != null) {
                                     temp.putAll(defaultExtraInfo);
                                 }

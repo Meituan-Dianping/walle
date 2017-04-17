@@ -57,7 +57,7 @@ public class WalleConfig {
         /**
          * 强制声明不使用defaultExtraInfo参数
          */
-        private boolean excludeDefaultExtraInfo = false;
+        private boolean excludeDefaultExtraInfo;
 
         public boolean isExcludeDefaultExtraInfo() {
             return excludeDefaultExtraInfo;
