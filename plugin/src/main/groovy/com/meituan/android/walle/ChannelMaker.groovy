@@ -89,7 +89,6 @@ class ChannelMaker extends DefaultTask {
                     'versionName': variant.versionName,
                     'versionCode': variant.versionCode,
                     'packageName': variant.applicationId,
-                    'fileSHA1'   : getFileHash(apkFile),
                     'flavorName' : variant.flavorName
             ]
 
@@ -182,8 +181,6 @@ class ChannelMaker extends DefaultTask {
 
         def buildTime = new SimpleDateFormat('yyyyMMdd-HHmmss').format(new Date());
         def channelName = alias == null ? channel : alias
-        nameVariantMap.put("buildTime", buildTime);
-        nameVariantMap.put('channel', channelName);
 
         String fileName = apkFile.getName();
         if (fileName.endsWith(DOT_APK)) {
@@ -191,13 +188,21 @@ class ChannelMaker extends DefaultTask {
         }
 
         String apkFileName = "${fileName}-${channelName}${DOT_APK}";
-        if (extension.apkFileNameFormat != null && extension.apkFileNameFormat.length() > 0) {
-            apkFileName = new SimpleTemplateEngine().createTemplate(extension.apkFileNameFormat).make(nameVariantMap).toString()
-        };
 
         File channelApkFile = new File(apkFileName, channelOutputFolder);
         FileUtils.copyFile(apkFile, channelApkFile);
         ChannelWriter.put(channelApkFile, channel, extraInfo)
+
+        nameVariantMap.put("buildTime", buildTime);
+        nameVariantMap.put('channel', channelName);
+        nameVariantMap.put('fileSHA1', getFileHash(channelApkFile));
+        if (extension.apkFileNameFormat != null && extension.apkFileNameFormat.length() > 0) {
+            def newApkFileName = new SimpleTemplateEngine().createTemplate(extension.apkFileNameFormat).make(nameVariantMap).toString()
+            if (!newApkFileName.contentEquals(apkFileName)) {
+                FileUtils.copyFile(channelApkFile, new File(newApkFileName, channelOutputFolder));
+                channelApkFile.delete();
+            }
+        }
     }
 
     def checkV2Signature(File apkFile) {
