@@ -14,6 +14,7 @@ import org.apache.commons.io.FilenameUtils;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,8 +47,26 @@ public class Batch2Command implements IWalleCommand {
                 final List<WalleConfig.ChannelInfo> channelInfoList = config.getChannelInfoList();
                 for (WalleConfig.ChannelInfo channelInfo : channelInfoList) {
                     Map<String, String> extraInfo = channelInfo.getExtraInfo();
-                    if (extraInfo == null) {
-                        extraInfo = defaultExtraInfo;
+                    if (!channelInfo.isExcludeDefaultExtraInfo()) {
+                        switch (config.getDefaultExtraInfoStrategy()) {
+                            case WalleConfig.STRATEGY_IF_NONE:
+                                if (extraInfo == null) {
+                                    extraInfo = defaultExtraInfo;
+                                }
+                                break;
+                            case WalleConfig.STRATEGY_ALWAYS:
+                                Map<String, String> temp = new HashMap<>();
+                                if (defaultExtraInfo != null) {
+                                    temp.putAll(defaultExtraInfo);
+                                }
+                                if (extraInfo != null) {
+                                    temp.putAll(extraInfo);
+                                }
+                                extraInfo = temp;
+                                break;
+                            default:
+                                break;
+                        }
                     }
                     generateChannelApk(inputFile, outputDir, channelInfo.getChannel(), channelInfo.getAlias(), extraInfo);
                 }

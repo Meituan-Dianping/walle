@@ -120,6 +120,17 @@ if (channelInfo != null) {
 String value = WalleChannelReader.get(context, "buildtime");
 ```
 
+##### 临时生成某渠道包
+
+我们推荐使用channelFile/configFile配置来生成渠道包，但有时也可能有临时生成渠道包需求，这时可以使用：
+
+- 生成单个渠道包：`./gradlew clean assembleReleaseChannels -PchannelList=meituan`
+- 生成多个渠道包 `./gradlew clean assembleReleaseChannels -PchannelList=meituan,dianping`
+- 生成渠道包&写入额外信息：`./gradlew clean assembleReleaseChannels -PchannelList=meituan -PextraInfo=buildtime:20161212,hash:xxxxxxx`
+  注意：这里的extraInfo以`key:value`形式提供，多个以`,`分隔。
+
+使用上述-P参数后，本次打包channelFile/configFile配置将会失效，其他配置仍然有效。
+
 ### 命令行工具使用方式
 
 可以使用命令行工具来支持各类自定义的需求，具体使用方式详见：[Walle CLI 使用说明](walle-cli/README.md)
