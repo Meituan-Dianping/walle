@@ -124,10 +124,11 @@ String value = WalleChannelReader.get(context, "buildtime");
 
 我们推荐使用channelFile/configFile配置来生成渠道包，但有时也可能有临时生成渠道包需求，这时可以使用：
 
-- 生成单个渠道包：`./gradlew clean assembleReleaseChannels -PchannelList=meituan`
-- 生成多个渠道包 `./gradlew clean assembleReleaseChannels -PchannelList=meituan,dianping`
-- 生成渠道包&写入额外信息：`./gradlew clean assembleReleaseChannels -PchannelList=meituan -PextraInfo=buildtime:20161212,hash:xxxxxxx`
-  注意：这里的extraInfo以`key:value`形式提供，多个以`,`分隔。
+- 生成单个渠道包: `./gradlew clean assembleReleaseChannels -PchannelList=meituan`
+- 生成多个渠道包: `./gradlew clean assembleReleaseChannels -PchannelList=meituan,dianping`
+- 生成渠道包&写入额外信息:
+  `./gradlew clean assembleReleaseChannels -PchannelList=meituan -PextraInfo=buildtime:20161212,hash:xxxxxxx`
+  注意: 这里的extraInfo以`key:value`形式提供，多个以`,`分隔。
 
 使用上述-P参数后，本次打包channelFile/configFile配置将会失效，其他配置仍然有效。
 
