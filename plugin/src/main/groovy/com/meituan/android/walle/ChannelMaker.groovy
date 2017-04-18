@@ -38,6 +38,9 @@ class ChannelMaker extends DefaultTask {
         group "Package"
     }
 
+    private static final String PROPERTY_CHANNEL_LIST = 'channelList'
+    private static final String PROPERTY_EXTRA_INFO = 'extraInfo'
+
     @TaskAction
     public void packaging() {
         Extension extension = Extension.getConfig(targetProject);
@@ -89,7 +92,31 @@ class ChannelMaker extends DefaultTask {
                     'flavorName' : variant.flavorName
             ]
 
-            if (extension.configFile instanceof File) {
+            if (targetProject.hasProperty(PROPERTY_CHANNEL_LIST)) {
+
+                def channelList = new ArrayList<String>()
+                def channelListProperty = targetProject.getProperties().get(PROPERTY_CHANNEL_LIST)
+                if (channelListProperty != null && channelListProperty.trim().length() > 0) {
+                    channelList.addAll(channelListProperty.split(",").collect { it.trim() })
+                }
+                def extraInfo = null;
+                def extraInfoString = targetProject.getProperties().get(PROPERTY_EXTRA_INFO)
+                if (extraInfoString != null && extraInfoString.trim().length() > 0) {
+                    def keyValues = extraInfoString.split(",").collect {
+                        it.trim()
+                    }
+                    extraInfo = keyValues.findAll {
+                        it.split(":").size() == 2
+                    }.collectEntries([:]) { keyValue ->
+                        def data = keyValue.split(":")
+                        [data[0], data[1]]
+                    }
+                }
+                channelList.each { channel ->
+                    generateChannelApk(apkFile, channelOutputFolder, nameVariantMap, channel, extraInfo, null)
+                }
+
+            } else if (extension.configFile instanceof File) {
                 if (!extension.configFile.exists()) {
                     project.logger.warn("config file does not exist")
                     return
@@ -98,9 +125,28 @@ class ChannelMaker extends DefaultTask {
                 def defaultExtraInfo = config.getDefaultExtraInfo()
                 config.getChannelInfoList().each { channelInfo ->
                     def extraInfo = channelInfo.extraInfo
-                    if (extraInfo == null) {
-                        extraInfo = defaultExtraInfo
+                    if (!channelInfo.excludeDefaultExtraInfo) {
+                        switch (config.defaultExtraInfoStrategy) {
+                            case WalleConfig.STRATEGY_IF_NONE:
+                                if (extraInfo == null) {
+                                    extraInfo = defaultExtraInfo
+                                }
+                                break;
+                            case WalleConfig.STRATEGY_ALWAYS:
+                                def temp = new HashMap<String, String>()
+                                if (defaultExtraInfo != null) {
+                                    temp.putAll(defaultExtraInfo)
+                                }
+                                if (extraInfo != null) {
+                                    temp.putAll(extraInfo)
+                                }
+                                extraInfo = temp
+                                break;
+                            default:
+                                break;
+                        }
                     }
+
                     generateChannelApk(apkFile, channelOutputFolder, nameVariantMap, channelInfo.channel, extraInfo, channelInfo.alias)
                 }
             } else if (extension.channelFile instanceof File) {
