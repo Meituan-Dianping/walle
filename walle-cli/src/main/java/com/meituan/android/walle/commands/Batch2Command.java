@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import com.meituan.android.walle.ChannelWriter;
 import com.meituan.android.walle.SignatureNotFoundException;
 import com.meituan.android.walle.WalleConfig;
+import com.meituan.android.walle.utils.Util;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -32,7 +33,7 @@ public class Batch2Command implements IWalleCommand {
         final File inputFile = files.get(0);
         File outputDir = null;
         if (files.size() == 2) {
-            outputDir = files.get(1);
+            outputDir = Util.removeDirInvalidChar(files.get(1));
             if (!outputDir.exists()) {
                 outputDir.mkdirs();
             }

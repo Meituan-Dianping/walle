@@ -16,7 +16,7 @@ git add .
 git commit -m "update cli.jar & readme"
 git push origin HEAD
 # upload jar & aar
-./gradlew clean bintrayUpload
+./gradlew clean bintrayUpload -x :app:bintrayUpload
 # git tag
 git tag v$VERSION_STRING
 git push origin v$VERSION_STRING

@@ -1,8 +1,7 @@
 package com.meituan.android.walle.utils;
 
-/**
- * Created by chentong on 21/11/2016.
- */
+import java.io.File;
+
 
 public final class Util {
     private Util() {
@@ -11,5 +10,12 @@ public final class Util {
 
     public static boolean isTextEmpty(final String text) {
         return text == null || text.length() == 0;
+    }
+    public static File removeDirInvalidChar(File file) {
+        if (System.getProperties().getProperty("os.name").toUpperCase().startsWith("WINDOWS")) {
+            String newFileName = file.getName().replaceAll("\"", "");
+            return new File(file.getParent(), newFileName);
+        }
+        return file;
     }
 }
