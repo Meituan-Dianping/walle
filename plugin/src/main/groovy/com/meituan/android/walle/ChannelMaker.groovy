@@ -39,6 +39,8 @@ class ChannelMaker extends DefaultTask {
     }
 
     private static final String PROPERTY_CHANNEL_LIST = 'channelList'
+    private static final String PROPERTY_CHANNEL_FILE = 'channelFile'
+    private static final String PROPERTY_CONFIG_FILE = 'configFile'
     private static final String PROPERTY_EXTRA_INFO = 'extraInfo'
 
     @TaskAction
@@ -116,51 +118,85 @@ class ChannelMaker extends DefaultTask {
                     generateChannelApk(apkFile, channelOutputFolder, nameVariantMap, channel, extraInfo, null)
                 }
 
+            } else if (targetProject.hasProperty(PROPERTY_CONFIG_FILE)) {
+
+                def configFile = new File(targetProject.getProperties().get(PROPERTY_CONFIG_FILE))
+
+                if (!configFile.exists()) {
+                    project.logger.warn("config file does not exist")
+                    return
+                }
+
+                generateChannelApkByConfigFile(configFile, apkFile, channelOutputFolder, nameVariantMap)
+
+            } else if (targetProject.hasProperty(PROPERTY_CHANNEL_FILE)) {
+
+                def channelFile = new File(targetProject.getProperties().get(PROPERTY_CHANNEL_FILE))
+
+                if (!channelFile.exists()) {
+                    project.logger.warn("channel file does not exist")
+                    return
+                }
+
+                generateChannelApkByChannelFile(channelFile, apkFile, channelOutputFolder, nameVariantMap)
+
             } else if (extension.configFile instanceof File) {
+
                 if (!extension.configFile.exists()) {
                     project.logger.warn("config file does not exist")
                     return
                 }
-                WalleConfig config = new Gson().fromJson(new FileReader(extension.configFile), WalleConfig.class)
-                def defaultExtraInfo = config.getDefaultExtraInfo()
-                config.getChannelInfoList().each { channelInfo ->
-                    def extraInfo = channelInfo.extraInfo
-                    if (!channelInfo.excludeDefaultExtraInfo) {
-                        switch (config.defaultExtraInfoStrategy) {
-                            case WalleConfig.STRATEGY_IF_NONE:
-                                if (extraInfo == null) {
-                                    extraInfo = defaultExtraInfo
-                                }
-                                break;
-                            case WalleConfig.STRATEGY_ALWAYS:
-                                def temp = new HashMap<String, String>()
-                                if (defaultExtraInfo != null) {
-                                    temp.putAll(defaultExtraInfo)
-                                }
-                                if (extraInfo != null) {
-                                    temp.putAll(extraInfo)
-                                }
-                                extraInfo = temp
-                                break;
-                            default:
-                                break;
-                        }
-                    }
 
-                    generateChannelApk(apkFile, channelOutputFolder, nameVariantMap, channelInfo.channel, extraInfo, channelInfo.alias)
-                }
+                generateChannelApkByConfigFile(extension.configFile, apkFile, channelOutputFolder, nameVariantMap)
+
             } else if (extension.channelFile instanceof File) {
+
                 if (!extension.channelFile.exists()) {
                     project.logger.warn("channel file does not exist")
                     return
                 }
 
-                getChannelListFromFile(extension.channelFile).each { channel -> generateChannelApk(apkFile, channelOutputFolder, nameVariantMap, channel, null, null) }
+                generateChannelApkByChannelFile(extension.channelFile, apkFile, channelOutputFolder, nameVariantMap)
             }
         }
 
         targetProject.logger.lifecycle("APK Signature Scheme v2 Channel Maker takes about " + (
                 System.currentTimeMillis() - startTime) + " milliseconds");
+    }
+
+    static def generateChannelApkByConfigFile(File configFile, File apkFile, File channelOutputFolder, nameVariantMap) {
+        WalleConfig config = new Gson().fromJson(new FileReader(configFile), WalleConfig.class)
+        def defaultExtraInfo = config.getDefaultExtraInfo()
+        config.getChannelInfoList().each { channelInfo ->
+            def extraInfo = channelInfo.extraInfo
+            if (!channelInfo.excludeDefaultExtraInfo) {
+                switch (config.defaultExtraInfoStrategy) {
+                    case WalleConfig.STRATEGY_IF_NONE:
+                        if (extraInfo == null) {
+                            extraInfo = defaultExtraInfo
+                        }
+                        break;
+                    case WalleConfig.STRATEGY_ALWAYS:
+                        def temp = new HashMap<String, String>()
+                        if (defaultExtraInfo != null) {
+                            temp.putAll(defaultExtraInfo)
+                        }
+                        if (extraInfo != null) {
+                            temp.putAll(extraInfo)
+                        }
+                        extraInfo = temp
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            generateChannelApk(apkFile, channelOutputFolder, nameVariantMap, channelInfo.channel, extraInfo, channelInfo.alias)
+        }
+    }
+
+    static def generateChannelApkByChannelFile(File channelFile, File apkFile, File channelOutputFolder, nameVariantMap) {
+        getChannelListFromFile(channelFile).each { channel -> generateChannelApk(apkFile, channelOutputFolder, nameVariantMap, channel, null, null) }
     }
 
     static def getChannelListFromFile(File channelFile) {
