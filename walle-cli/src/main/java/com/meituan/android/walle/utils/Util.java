@@ -11,9 +11,9 @@ public final class Util {
     public static boolean isTextEmpty(final String text) {
         return text == null || text.length() == 0;
     }
-    public static File removeDirInvalidChar(File file) {
+    public static File removeDirInvalidChar(final File file) {
         if (System.getProperties().getProperty("os.name").toUpperCase().startsWith("WINDOWS")) {
-            String newFileName = file.getName().replaceAll("\"", "");
+            final String newFileName = file.getName().replaceAll("\"", "");
             return new File(file.getParent(), newFileName);
         }
         return file;
