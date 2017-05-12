@@ -54,7 +54,7 @@ final class ApkUtil {
         // we expect to find the EOCD marker 22 bytes from the end.
 
 
-        long archiveSize = fileChannel.size();
+        final long archiveSize = fileChannel.size();
         if (archiveSize < ZIP_EOCD_REC_MIN_SIZE) {
             throw new IOException("zip file to small");
         }
@@ -67,11 +67,11 @@ final class ApkUtil {
         // the candidate record's comment length is such that the remainder of the record takes up
         // exactly the remaining bytes in the buffer. The search is bounded because the maximum
         // size of the comment field is 65535 bytes because the field is an unsigned 16-bit number.
-        long maxCommentLength = Math.min(archiveSize - ZIP_EOCD_REC_MIN_SIZE, UINT16_MAX_VALUE);
-        long eocdWithEmptyCommentStartPosition = archiveSize - ZIP_EOCD_REC_MIN_SIZE;
+        final long maxCommentLength = Math.min(archiveSize - ZIP_EOCD_REC_MIN_SIZE, UINT16_MAX_VALUE);
+        final long eocdWithEmptyCommentStartPosition = archiveSize - ZIP_EOCD_REC_MIN_SIZE;
         for (int expectedCommentLength = 0; expectedCommentLength <= maxCommentLength;
              expectedCommentLength++) {
-            long eocdStartPos = eocdWithEmptyCommentStartPosition - expectedCommentLength;
+            final long eocdStartPos = eocdWithEmptyCommentStartPosition - expectedCommentLength;
 
             final ByteBuffer byteBuffer = ByteBuffer.allocate(4);
             fileChannel.position(eocdStartPos);
@@ -84,7 +84,7 @@ final class ApkUtil {
                 fileChannel.read(commentLengthByteBuffer);
                 commentLengthByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
 
-                int actualCommentLength = commentLengthByteBuffer.getShort(0);
+                final int actualCommentLength = commentLengthByteBuffer.getShort(0);
                 if (actualCommentLength == expectedCommentLength) {
                     return actualCommentLength;
                 }
@@ -97,7 +97,7 @@ final class ApkUtil {
         return findCentralDirStartOffset(fileChannel, getCommentLength(fileChannel));
     }
 
-    public static long findCentralDirStartOffset(final FileChannel fileChannel, long commentLength) throws IOException {
+    public static long findCentralDirStartOffset(final FileChannel fileChannel, final long commentLength) throws IOException {
         // End of central directory record (EOCD)
         // Offset    Bytes     Description[23]
         // 0           4       End of central directory signature = 0x06054b50
