@@ -67,11 +67,6 @@ public final class PayloadWriter {
         try {
             fIn = new RandomAccessFile(apkFile, "rw");
             fileChannel = fIn.getChannel();
-            final boolean hasComment = ApkUtil.checkComment(fileChannel);
-            if (hasComment) {
-                throw new IOException("zip data already has an archive comment");
-            }
-
             final long centralDirStartOffset = ApkUtil.findCentralDirStartOffset(fileChannel);
             // Find the APK Signing Block. The block immediately precedes the Central Directory.
             final Pair<ByteBuffer, Long> apkSigningBlockAndOffset = ApkUtil.findApkSigningBlock(fileChannel, centralDirStartOffset);
