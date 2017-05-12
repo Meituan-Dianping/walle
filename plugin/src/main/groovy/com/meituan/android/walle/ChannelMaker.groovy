@@ -164,7 +164,7 @@ class ChannelMaker extends DefaultTask {
                 System.currentTimeMillis() - startTime) + " milliseconds");
     }
 
-    static def generateChannelApkByConfigFile(File configFile, File apkFile, File channelOutputFolder, nameVariantMap) {
+    def generateChannelApkByConfigFile(File configFile, File apkFile, File channelOutputFolder, nameVariantMap) {
         WalleConfig config = new Gson().fromJson(new FileReader(configFile), WalleConfig.class)
         def defaultExtraInfo = config.getDefaultExtraInfo()
         config.getChannelInfoList().each { channelInfo ->
@@ -195,7 +195,7 @@ class ChannelMaker extends DefaultTask {
         }
     }
 
-    static def generateChannelApkByChannelFile(File channelFile, File apkFile, File channelOutputFolder, nameVariantMap) {
+    def generateChannelApkByChannelFile(File channelFile, File apkFile, File channelOutputFolder, nameVariantMap) {
         getChannelListFromFile(channelFile).each { channel -> generateChannelApk(apkFile, channelOutputFolder, nameVariantMap, channel, null, null) }
     }
 
