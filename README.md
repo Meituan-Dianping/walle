@@ -157,6 +157,7 @@ String value = WalleChannelReader.get(context, "buildtime");
 ## 注意事项
 
 * 使用apksigner重新对Apk签名会导致渠道信息丢失，需要再次写入渠道信息
+* 1.1.3版本起，walle支持对含有comment的apk进行渠道写入, 详见[issue 52](https://github.com/Meituan-Dianping/walle/issues/52)
 
 ## 技术支持
 
