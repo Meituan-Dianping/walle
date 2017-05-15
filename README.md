@@ -131,8 +131,11 @@ String value = WalleChannelReader.get(context, "buildtime");
   `./gradlew clean assembleReleaseChannels -PchannelList=meituan -PextraInfo=buildtime:20161212,hash:xxxxxxx`  
   
   注意: 这里的extraInfo以`key:value`形式提供，多个以`,`分隔。
+- 使用临时channelFile生成渠道包: `./gradlew clean assembleReleaseChannels -PchannelFile=/Users/xx/Documents/channel`
+- 使用临时configFile生成渠道包: `./gradlew clean assembleReleaseChannels -PconfigFile=/Users/xx/Documents/config.json`
 
 使用上述-P参数后，本次打包channelFile/configFile配置将会失效，其他配置仍然有效。
+`-PchannelList`,`-PchannelFile`, `-PconfigFile`三者不可同时使用。
 
 ### 命令行工具使用方式
 
