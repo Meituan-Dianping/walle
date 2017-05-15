@@ -56,7 +56,7 @@ final class ApkUtil {
 
         final long archiveSize = fileChannel.size();
         if (archiveSize < ZIP_EOCD_REC_MIN_SIZE) {
-            throw new IOException("zip file to small");
+            throw new IOException("APK too small for ZIP End of Central Directory (EOCD) record");
         }
         // ZIP End of Central Directory (EOCD) record is located at the very end of the ZIP archive.
         // The record can be identified by its 4-byte signature/magic which is located at the very
@@ -90,7 +90,7 @@ final class ApkUtil {
                 }
             }
         }
-        throw new IOException("zip file eocd not found");
+        throw new IOException("ZIP End of Central Directory (EOCD) record not found");
     }
 
     public static long findCentralDirStartOffset(final FileChannel fileChannel) throws IOException {
