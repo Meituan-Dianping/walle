@@ -2,7 +2,7 @@
 
 ```groovy
 dependencies {
-    compile 'com.meituan.android.walle:payload_writer:1.1.2'
+    compile 'com.meituan.android.walle:payload_writer:1.1.3'
 }
 ```
 
