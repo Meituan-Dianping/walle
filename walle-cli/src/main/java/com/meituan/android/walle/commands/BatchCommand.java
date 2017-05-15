@@ -6,6 +6,7 @@ import com.beust.jcommander.converters.FileConverter;
 import com.meituan.android.walle.ChannelWriter;
 import com.meituan.android.walle.SignatureNotFoundException;
 import com.meituan.android.walle.utils.CommaSeparatedKeyValueConverter;
+import com.meituan.android.walle.utils.Util;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -37,7 +38,7 @@ public class BatchCommand implements IWalleCommand {
         final File inputFile = files.get(0);
         File outputDir = null;
         if (files.size() == 2) {
-            outputDir = files.get(1);
+            outputDir = Util.removeDirInvalidChar(files.get(1));
             if (!outputDir.exists()) {
                 outputDir.mkdirs();
             }
