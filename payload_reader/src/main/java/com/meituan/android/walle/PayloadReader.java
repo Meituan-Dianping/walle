@@ -60,10 +60,6 @@ public final class PayloadReader {
             try {
                 randomAccessFile = new RandomAccessFile(apkFile, "r");
                 fileChannel = randomAccessFile.getChannel();
-                final boolean hasComment = ApkUtil.checkComment(fileChannel);
-                if (hasComment) {
-                    throw new IllegalArgumentException("zip data already has an archive comment");
-                }
                 final ByteBuffer apkSigningBlock2 = ApkUtil.findApkSigningBlock(fileChannel).getFirst();
                 idValues = ApkUtil.findIdValues(apkSigningBlock2);
             } catch (IOException ignore) {

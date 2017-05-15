@@ -32,42 +32,12 @@ final class ApkUtil {
 
     public static final String DEFAULT_CHARSET = "UTF-8";
 
-    /**
-     * check zip comment
-     *
-     * @param fileChannel fileChannel
-     * @return true if has comment
-     * @throws IOException
-     */
-    public static boolean checkComment(final FileChannel fileChannel) throws IOException {
-        // End of central directory record (EOCD)
-        // Offset     Bytes     Description[23]
-        // 0            4       End of central directory signature = 0x06054b50
-        // 4            2       Number of this disk
-        // 6            2       Disk where central directory starts
-        // 8            2       Number of central directory records on this disk
-        // 10           2       Total number of central directory records
-        // 12           4       Size of central directory (bytes)
-        // 16           4       Offset of start of central directory, relative to start of archive
-        // 20           2       Comment length (n)
-        // 22           n       Comment
-        // For a zip with no archive comment, the
-        // end-of-central-directory record will be 22 bytes long, so
-        // we expect to find the EOCD marker 22 bytes from the end.
-        final ByteBuffer byteBuffer = ByteBuffer.allocate(4);
-        fileChannel.position(fileChannel.size() - 22);
-        fileChannel.read(byteBuffer);
+    private static final int ZIP_EOCD_REC_MIN_SIZE = 22;
+    private static final int ZIP_EOCD_REC_SIG = 0x06054b50;
+    private static final int UINT16_MAX_VALUE = 0xffff;
+    private static final int ZIP_EOCD_COMMENT_LENGTH_FIELD_OFFSET = 20;
 
-        if (byteBuffer.get(0) != 0x50 ||
-                byteBuffer.get(1) != 0x4b ||
-                byteBuffer.get(2) != 0x05 ||
-                byteBuffer.get(3) != 0x06) {
-            return true;
-        }
-        return false;
-    }
-
-    public static long findCentralDirStartOffset(final FileChannel fileChannel) throws IOException {
+    public static long getCommentLength(final FileChannel fileChannel) throws IOException {
         // End of central directory record (EOCD)
         // Offset    Bytes     Description[23]
         // 0           4       End of central directory signature = 0x06054b50
@@ -82,11 +52,72 @@ final class ApkUtil {
         // For a zip with no archive comment, the
         // end-of-central-directory record will be 22 bytes long, so
         // we expect to find the EOCD marker 22 bytes from the end.
-        final ByteBuffer zipEndOfCentralDirectory = ByteBuffer.allocate(4);
-        zipEndOfCentralDirectory.order(ByteOrder.LITTLE_ENDIAN);
-        fileChannel.position(fileChannel.size() - 6); // 6 = 2 (Comment length) + 4 (Offset of start of central directory, relative to start of archive)
-        fileChannel.read(zipEndOfCentralDirectory);
-        final long centralDirStartOffset = zipEndOfCentralDirectory.getInt(0);
+
+
+        final long archiveSize = fileChannel.size();
+        if (archiveSize < ZIP_EOCD_REC_MIN_SIZE) {
+            throw new IOException("APK too small for ZIP End of Central Directory (EOCD) record");
+        }
+        // ZIP End of Central Directory (EOCD) record is located at the very end of the ZIP archive.
+        // The record can be identified by its 4-byte signature/magic which is located at the very
+        // beginning of the record. A complication is that the record is variable-length because of
+        // the comment field.
+        // The algorithm for locating the ZIP EOCD record is as follows. We search backwards from
+        // end of the buffer for the EOCD record signature. Whenever we find a signature, we check
+        // the candidate record's comment length is such that the remainder of the record takes up
+        // exactly the remaining bytes in the buffer. The search is bounded because the maximum
+        // size of the comment field is 65535 bytes because the field is an unsigned 16-bit number.
+        final long maxCommentLength = Math.min(archiveSize - ZIP_EOCD_REC_MIN_SIZE, UINT16_MAX_VALUE);
+        final long eocdWithEmptyCommentStartPosition = archiveSize - ZIP_EOCD_REC_MIN_SIZE;
+        for (int expectedCommentLength = 0; expectedCommentLength <= maxCommentLength;
+             expectedCommentLength++) {
+            final long eocdStartPos = eocdWithEmptyCommentStartPosition - expectedCommentLength;
+
+            final ByteBuffer byteBuffer = ByteBuffer.allocate(4);
+            fileChannel.position(eocdStartPos);
+            fileChannel.read(byteBuffer);
+            byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+
+            if (byteBuffer.getInt(0) == ZIP_EOCD_REC_SIG) {
+                final ByteBuffer commentLengthByteBuffer = ByteBuffer.allocate(2);
+                fileChannel.position(eocdStartPos + ZIP_EOCD_COMMENT_LENGTH_FIELD_OFFSET);
+                fileChannel.read(commentLengthByteBuffer);
+                commentLengthByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+
+                final int actualCommentLength = commentLengthByteBuffer.getShort(0);
+                if (actualCommentLength == expectedCommentLength) {
+                    return actualCommentLength;
+                }
+            }
+        }
+        throw new IOException("ZIP End of Central Directory (EOCD) record not found");
+    }
+
+    public static long findCentralDirStartOffset(final FileChannel fileChannel) throws IOException {
+        return findCentralDirStartOffset(fileChannel, getCommentLength(fileChannel));
+    }
+
+    public static long findCentralDirStartOffset(final FileChannel fileChannel, final long commentLength) throws IOException {
+        // End of central directory record (EOCD)
+        // Offset    Bytes     Description[23]
+        // 0           4       End of central directory signature = 0x06054b50
+        // 4           2       Number of this disk
+        // 6           2       Disk where central directory starts
+        // 8           2       Number of central directory records on this disk
+        // 10          2       Total number of central directory records
+        // 12          4       Size of central directory (bytes)
+        // 16          4       Offset of start of central directory, relative to start of archive
+        // 20          2       Comment length (n)
+        // 22          n       Comment
+        // For a zip with no archive comment, the
+        // end-of-central-directory record will be 22 bytes long, so
+        // we expect to find the EOCD marker 22 bytes from the end.
+
+        final ByteBuffer zipCentralDirectoryStart = ByteBuffer.allocate(4);
+        zipCentralDirectoryStart.order(ByteOrder.LITTLE_ENDIAN);
+        fileChannel.position(fileChannel.size() - commentLength - 6); // 6 = 2 (Comment length) + 4 (Offset of start of central directory, relative to start of archive)
+        fileChannel.read(zipCentralDirectoryStart);
+        final long centralDirStartOffset = zipCentralDirectoryStart.getInt(0);
         return centralDirStartOffset;
     }
 
