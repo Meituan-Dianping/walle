@@ -3,6 +3,7 @@ package com.meituan.android.walle;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Arrays;
@@ -11,6 +12,25 @@ import java.util.Map;
 public final class PayloadReader {
     private PayloadReader() {
         super();
+    }
+
+    /**
+     * get string (UTF-8) by id
+     *
+     * @param apkFile apk file
+     * @return null if not found
+     */
+    public static String getString(final File apkFile, final int id) {
+        final byte[] bytes = PayloadReader.get(apkFile, id);
+        if (bytes == null) {
+            return null;
+        }
+        try {
+            return new String(bytes, ApkUtil.DEFAULT_CHARSET);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**
