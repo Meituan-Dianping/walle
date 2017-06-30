@@ -20,7 +20,7 @@ public final class PayloadWriter {
     }
 
     /**
-     * put (id, String) into apk, update if id exists,  not low memory operation
+     * put (id, String) into apk, update if id exists
      * @param apkFile apk file
      * @param id id
      * @param string string content
@@ -35,7 +35,7 @@ public final class PayloadWriter {
      * @param apkFile apk file
      * @param id id
      * @param string string
-     * @param lowMemory if need low memory operation
+     * @param lowMemory if need low memory operation, maybe a little slower
      * @throws IOException
      * @throws SignatureNotFoundException
      */
@@ -48,7 +48,7 @@ public final class PayloadWriter {
         put(apkFile, id, byteBuffer, lowMemory);
     }
     /**
-     * put (id, buffer) into apk, update if id exists , not low memory operation
+     * put (id, buffer) into apk, update if id exists
      *
      * @param apkFile apk file
      * @param id      id
@@ -65,7 +65,7 @@ public final class PayloadWriter {
      * @param apkFile apk file
      * @param id id
      * @param buffer buffer
-     * @param lowMemory if need low memory operation
+     * @param lowMemory if need low memory operation, maybe a little slower
      * @throws IOException
      * @throws SignatureNotFoundException
      */
@@ -75,7 +75,7 @@ public final class PayloadWriter {
         putAll(apkFile, idValues, lowMemory);
     }
     /**
-     * put new idValues into apk, update if id exists, not low memory operation
+     * put new idValues into apk, update if id exists
      *
      * @param apkFile  apk file
      * @param idValues id value. NOTE: use unknown IDs. DO NOT use ID that have already been used.  See <a href='https://source.android.com/security/apksigning/v2.html'>APK Signature Scheme v2</a>
@@ -90,7 +90,7 @@ public final class PayloadWriter {
      *
      * @param apkFile  apk file
      * @param idValues id value. NOTE: use unknown IDs. DO NOT use ID that have already been used.  See <a href='https://source.android.com/security/apksigning/v2.html'>APK Signature Scheme v2</a>
-     * @param lowMemory if need low memory operation
+     * @param lowMemory if need low memory operation, maybe a little slower
      * @throws IOException
      * @throws SignatureNotFoundException
      */
@@ -127,7 +127,7 @@ public final class PayloadWriter {
      *
      * @param apkFile apk file
      * @param id id
-     * @param lowMemory  if need low memory operation
+     * @param lowMemory  if need low memory operation, maybe a little slower
      * @throws IOException
      * @throws SignatureNotFoundException
      */
@@ -190,7 +190,7 @@ public final class PayloadWriter {
                     FileOutputStream outStream = null;
                     try {
                         outStream = new FileOutputStream(tempCentralBytesFile);
-                        byte[] buffer = new byte[1024];
+                        final byte[] buffer = new byte[1024];
 
                         int len;
                         while ((len = fIn.read(buffer)) > 0){
@@ -215,7 +215,7 @@ public final class PayloadWriter {
                     FileInputStream inputStream = null;
                     try {
                         inputStream = new FileInputStream(tempCentralBytesFile);
-                        byte[] buffer = new byte[1024];
+                        final byte[] buffer = new byte[1024];
 
                         int len;
                         while ((len = inputStream.read(buffer)) > 0){

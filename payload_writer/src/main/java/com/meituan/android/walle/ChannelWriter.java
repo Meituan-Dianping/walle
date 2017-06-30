@@ -29,7 +29,7 @@ public final class ChannelWriter {
      *
      * @param apkFile apk file
      * @param channel channel
-     * @param lowMemory if need low memory operation
+     * @param lowMemory if need low memory operation, maybe a little slower
      * @throws IOException
      * @throws SignatureNotFoundException
      */
@@ -54,7 +54,7 @@ public final class ChannelWriter {
      * @param apkFile   apk file
      * @param channel   channel （nullable)
      * @param extraInfo extra info (don't use {@link ChannelReader#CHANNEL_KEY PayloadReader.CHANNEL_KEY} as your key)
-     * @param lowMemory if need low memory operation
+     * @param lowMemory if need low memory operation, maybe a little slower
      * @throws IOException
      * @throws SignatureNotFoundException
      */
@@ -88,12 +88,12 @@ public final class ChannelWriter {
         putRaw(apkFile, string, false);
     }
     /**
-     * write custom content with channel fixed id, low memory operation <br/>
+     * write custom content with channel fixed id<br/>
      * NOTE: {@link ChannelReader#get(File)}  and {@link ChannelReader#getMap(File)}  may be affected
      *
      * @param apkFile apk file
      * @param string  custom content
-     * @param lowMemory if need low memory operation
+     * @param lowMemory if need low memory operation, maybe a little slower
      * @throws IOException
      * @throws SignatureNotFoundException
      */
@@ -114,7 +114,7 @@ public final class ChannelWriter {
      * remove channel id content
      *
      * @param apkFile apk file
-     * @param lowMemory if need low memory operation
+     * @param lowMemory if need low memory operation, maybe a little slower
      * @throws IOException
      * @throws SignatureNotFoundException
      */
