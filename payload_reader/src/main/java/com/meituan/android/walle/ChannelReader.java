@@ -4,7 +4,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -65,15 +64,6 @@ public final class ChannelReader {
      * @return null if not found
      */
     public static String getRaw(final File apkFile) {
-        final byte[] bytes = PayloadReader.get(apkFile, ApkUtil.APK_CHANNEL_BLOCK_ID);
-        if (bytes == null) {
-            return null;
-        }
-        try {
-            return new String(bytes, ApkUtil.DEFAULT_CHARSET);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return  PayloadReader.getString(apkFile, ApkUtil.APK_CHANNEL_BLOCK_ID);
     }
 }
