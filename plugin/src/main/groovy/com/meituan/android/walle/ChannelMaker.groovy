@@ -235,8 +235,7 @@ class ChannelMaker extends DefaultTask {
         if (extension.apkFileNameFormat != null && extension.apkFileNameFormat.length() > 0) {
             def newApkFileName = new SimpleTemplateEngine().createTemplate(extension.apkFileNameFormat).make(nameVariantMap).toString()
             if (!newApkFileName.contentEquals(apkFileName)) {
-                FileUtils.copyFile(channelApkFile, new File(newApkFileName, channelOutputFolder));
-                channelApkFile.delete();
+                channelApkFile.renameTo(new File(newApkFileName, channelOutputFolder))
             }
         }
     }

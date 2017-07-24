@@ -2,6 +2,12 @@ apply plugin: 'groovy'
 apply from: rootProject.file("mt_maven.gradle")
 //apply from: rootProject.file('quality.gradle')
 
+jar {
+    manifest {
+        attributes 'Walle-Version': VERSION_NAME
+    }
+}
+
 dependencies {
     compile gradleApi()
     compile localGroovy()
