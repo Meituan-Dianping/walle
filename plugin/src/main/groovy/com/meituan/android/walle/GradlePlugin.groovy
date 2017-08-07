@@ -7,6 +7,10 @@ import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.ProjectConfigurationException
 
+import java.util.jar.Attributes
+import java.util.jar.JarFile
+import java.util.jar.Manifest
+
 class GradlePlugin implements org.gradle.api.Plugin<Project> {
 
     public static final String sPluginExtensionName = "walle";
@@ -22,7 +26,7 @@ class GradlePlugin implements org.gradle.api.Plugin<Project> {
         }
 
         project.dependencies {
-            compile 'com.meituan.android.walle:library:latest.integration'
+            compile 'com.meituan.android.walle:library:' + getVersion()
         }
 
         applyExtension(project);
@@ -107,5 +111,29 @@ class GradlePlugin implements org.gradle.api.Plugin<Project> {
         else {
             return Integer.signum(vals1.length - vals2.length);
         }
+    }
+    private static String getVersion() {
+        try {
+            final Enumeration resEnum = Thread.currentThread().getContextClassLoader().getResources(JarFile.MANIFEST_NAME);
+            while (resEnum.hasMoreElements()) {
+                try {
+                    final URL url = (URL) resEnum.nextElement();
+                    final InputStream is = url.openStream();
+                    if (is != null) {
+                        final Manifest manifest = new Manifest(is);
+                        final Attributes mainAttribs = manifest.getMainAttributes();
+                        final String version = mainAttribs.getValue("Walle-Version");
+                        if (version != null) {
+                            return version;
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+        return null;
     }
 }
