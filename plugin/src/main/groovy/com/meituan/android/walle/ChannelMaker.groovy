@@ -165,7 +165,7 @@ class ChannelMaker extends DefaultTask {
     }
 
     def generateChannelApkByConfigFile(File configFile, File apkFile, File channelOutputFolder, nameVariantMap) {
-        WalleConfig config = new Gson().fromJson(new FileReader(configFile), WalleConfig.class)
+        WalleConfig config = new Gson().fromJson(new InputStreamReader(new FileInputStream(configFile), "UTF-8"), WalleConfig.class)
         def defaultExtraInfo = config.getDefaultExtraInfo()
         config.getChannelInfoList().each { channelInfo ->
             def extraInfo = channelInfo.extraInfo

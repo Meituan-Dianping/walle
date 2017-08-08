@@ -13,8 +13,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +44,7 @@ public class Batch2Command implements IWalleCommand {
 
         if (configFile != null) {
             try {
-                final WalleConfig config = new Gson().fromJson(new FileReader(configFile), WalleConfig.class);
+                final WalleConfig config = new Gson().fromJson(new InputStreamReader(new FileInputStream(configFile), "UTF-8"), WalleConfig.class);
                 final Map<String, String> defaultExtraInfo = config.getDefaultExtraInfo();
                 final List<WalleConfig.ChannelInfo> channelInfoList = config.getChannelInfoList();
                 for (WalleConfig.ChannelInfo channelInfo : channelInfoList) {
