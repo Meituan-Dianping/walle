@@ -1,3 +1,5 @@
+import com.android.build.gradle.api.BaseVariant
+
 apply plugin: 'com.android.application'
 apply plugin: 'walle'
 apply from: rootProject.file('quality.gradle')
@@ -58,6 +60,8 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
             signingConfig signingConfigs.sankuai
+
+            applicationIdSuffix 'debug'
         }
     }
 
@@ -91,4 +95,17 @@ walle {
     //configFile与channelFile两者必须存在一个，否则无法生成渠道包。两者都存在时优先执行configFile
     channelFile = new File("${project.getProjectDir()}/channel")
     //configFile = new File("${project.getProjectDir()}/config.json")
+}
+
+
+// 根据不同的applicationId来配置不同的channelFile／configFile
+afterEvaluate {
+    project.android.applicationVariants.all { BaseVariant variant ->
+        variant.assemble.doFirst {
+            if (variant.applicationId.endsWith(".debug")) {
+
+                project.walle.channelFile = new File("${project.getProjectDir()}/channel_debug")
+            }
+        }
+    }
 }
