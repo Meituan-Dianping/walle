@@ -44,9 +44,9 @@ class GradlePlugin implements org.gradle.api.Plugin<Project> {
             throw new ProjectConfigurationException("Plugin requires the 'com.android.tools.build:gradle' version 2.2.0 or above to be configured.", null);
         }
 
-        project.dependencies {
-            compile 'com.meituan.android.walle:library:' + getVersion()
-        }
+//        project.dependencies {
+//            compile 'com.meituan.android.walle:library:' + getVersion()
+//        }
 
         applyExtension(project);
 
