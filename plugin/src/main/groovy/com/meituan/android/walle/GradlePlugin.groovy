@@ -1,7 +1,6 @@
 package com.meituan.android.walle
 
 import com.android.build.gradle.api.BaseVariant
-import com.android.builder.Version
 import com.android.builder.model.SigningConfig
 import org.gradle.api.GradleException
 import org.gradle.api.Project
@@ -21,7 +20,27 @@ class GradlePlugin implements org.gradle.api.Plugin<Project> {
             throw new ProjectConfigurationException("Plugin requires the 'com.android.application' plugin to be configured.", null);
         }
 
-        if (versionCompare(Version.ANDROID_GRADLE_PLUGIN_VERSION, "2.2.0") < 0) {
+        String version = null
+        try {
+            def clazz = Class.forName("com.android.builder.Version")
+            def field  = clazz.getDeclaredField("ANDROID_GRADLE_PLUGIN_VERSION")
+            field.setAccessible(true)
+            version = field.get(null)
+        } catch (ClassNotFoundException ignore) {
+        } catch (NoSuchFieldException ignore) {
+        }
+        if (version == null) {
+            try {
+                def clazz = Class.forName("com.android.builder.model.Version")
+                def field  = clazz.getDeclaredField("ANDROID_GRADLE_PLUGIN_VERSION")
+                field.setAccessible(true)
+                version = field.get(null)
+            } catch (ClassNotFoundException ignore) {
+            } catch (NoSuchFieldException ignore) {
+            }
+        }
+
+        if (version != null && versionCompare(version, "2.2.0") < 0) {
             throw new ProjectConfigurationException("Plugin requires the 'com.android.tools.build:gradle' version 2.2.0 or above to be configured.", null);
         }
 
