@@ -1,0 +1,111 @@
+import com.android.build.gradle.api.BaseVariant
+
+apply plugin: 'com.android.application'
+apply plugin: 'walle'
+apply from: rootProject.file('quality.gradle')
+
+buildscript {
+    repositories {
+        mavenLocal()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.2.0'
+        classpath "com.meituan.android.walle:plugin:latest.integration"
+    }
+}
+
+android {
+
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+
+        versionCode 101
+        versionName "1.0.1"
+        applicationId "com.meituan.android.walle.sample"
+    }
+
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'armeabi', 'x86'
+            universalApk false
+        }
+    }
+
+    signingConfigs {
+        sign {
+            storeFile file("keystore/sign-debug.keystore")
+            storePassword "1234567"
+            keyAlias "debug"
+            keyPassword "12345678"
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.sign
+        }
+
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            signingConfig signingConfigs.sign
+
+            applicationIdSuffix 'debug'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+
+//    productFlavors {
+//        china {
+//        }
+//        international {
+//        }
+//    }
+}
+
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:support-v4:24.1.1'
+    compile 'com.android.support:appcompat-v7:24.1.1'
+    compile project(':library')
+}
+
+walle {
+    apkOutputFolder = new File("${project.buildDir}/outputs/channels")
+    apkFileNameFormat = '${appName}-${packageName}-${channel}-${buildType}-v${versionName}-${versionCode}-${buildTime}-${flavorName}.apk'
+    //configFile与channelFile两者必须存在一个，否则无法生成渠道包。两者都存在时优先执行configFile
+    channelFile = new File("${project.getProjectDir()}/channel")
+    //configFile = new File("${project.getProjectDir()}/config.json")
+}
+
+
+// 根据不同的applicationId来配置不同的channelFile／configFile
+afterEvaluate {
+    project.android.applicationVariants.all { BaseVariant variant ->
+        variant.assemble.doFirst {
+            if (variant.applicationId.endsWith(".debug")) {
+
+                project.walle.channelFile = new File("${project.getProjectDir()}/channel_debug")
+            }
+        }
+    }
+}

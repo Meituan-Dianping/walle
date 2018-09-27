@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
-apply from: file('../gradle_mvn_push.gradle')
+apply from: rootProject.file("mt_maven.gradle")
+apply from: rootProject.file('quality.gradle')
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -10,18 +11,30 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
     }
 
-        buildTypes {
+    buildTypes {
         debug {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android.txt')
         }
         release {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt')
         }
+    }
+
+    lintOptions {
+        quiet true
+        warningsAsErrors true
+        disable 'GradleDependency'
     }
 }
 
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.android.support:support-annotations:24.1.1'
+    compile project(':payload_reader')
 }

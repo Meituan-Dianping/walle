@@ -1,0 +1,68 @@
+{
+  //extraInfo 不要出现以`channel`为key的情况
+  /*
+  不声明extraInfo的channel默认使用的extraInfo
+  如果没有此项则没有默认extraInfo
+  */
+  "defaultExtraInfo": {
+    "key2": "20161213",
+    "key": "20161212"
+  },
+
+  /*
+    strategy:
+     1. ifNone (默认适用此策略) : 仅当对应channel没有extraInfo时生效
+     2. always : 所有channel都生效，channel中extraInfo的key与defaultExtraInfo重复时，覆盖defaultExtraInfo中的内容。
+   */
+
+  //"defaultExtraInfoStrategy": "always",
+
+  "channelInfoList": [
+    {
+      "channel": "meituan",
+      // 此channel将使用自己声明的extraInfo
+      /*
+      此alias可以做到写入apk的channel是meituan，而打包时输出的文件名是美团
+      注意：alias不声明时，walle配置apkFileNameFormat中channel就是channel，否则为alias
+      */
+      "alias": "美团",
+      "extraInfo": {
+        "buildtime": "20161212",
+        "hash": "123"
+      }
+    },
+    {
+      "channel": "360cn",
+      // 此channel将使用自己声明的extraInfo
+      "extraInfo": {
+        "key": "20161213"
+      }
+    },
+    {
+      "channel": "googleplay"
+      // 此channel将使用defaultExtraInfo
+    },
+    {
+      "channel": "xiaomi"
+      // 此channel将使用defaultExtraInfo
+    },
+    {
+      "channel": "meizu"
+      // 此channel将使用defaultExtraInfo
+    },
+    {
+      "channel": "wandoujia",
+      "excludeDefaultExtraInfo": true
+      //强制声明不使用defaultExtraInfo，默认false
+    },
+    {
+      "channel": "myapp",
+      "excludeDefaultExtraInfo": true,
+      //强制声明不使用defaultExtraInfo，默认false
+      "extraInfo": {
+        // 尽管exclude default，但也可以继续写入自己的。
+        "key": "20161212"
+      }
+    }
+  ]
+}

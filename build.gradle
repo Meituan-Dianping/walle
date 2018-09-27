@@ -6,6 +6,8 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.2.0'
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.4.1'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.4'
     }
 }
 
@@ -26,28 +28,13 @@ allprojects {
 }
 
 ext {
-    minSdkVersion = 15
+    minSdkVersion = 9
     compileSdkVersion = 24
     targetSdkVersion = compileSdkVersion
     buildToolsVersion = '24.0.1'
     javaVersion = JavaVersion.VERSION_1_7
+}
 
-    GROUP = 'com.meituan.android.walle'
-    VERSION_NAME = "${VERSION_NAME_PREFIX}${VERSION_NAME_SUFFIX}"
-
-    POM_PACKAGING = "pom"
-    POM_DESCRIPTION = "walle"
-    POM_DESCRIPTION = 'Android Gradle Plugin For Multi -Channel'
-    POM_URL = ''
-    POM_SCM_URL = ''
-    POM_SCM_CONNECTION = ''
-    POM_SCM_DEV_CONNECTION = ''
-    POM_LICENCE_NAME = ''
-    POM_LICENCE_URL = ''
-    POM_LICENCE_DIST = 'repo'
-    POM_DEVELOPER_ID = 'achellies'
-    POM_DEVELOPER_NAME = 'achellies'
-    POM_DEVELOPER_EMAIL = 'achellies @163.com'
-    RELEASE_REPOSITORY_URL = 'http://nexus:8081/nexus/content/repositories/releases/'
-    SNAPSHOT_REPOSITORY_URL = 'http://nexus:8081/nexus/content/repositories/snapshots/'
+task clean(type: Delete) {
+    delete rootProject.buildDir
 }

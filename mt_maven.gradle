@@ -1,0 +1,65 @@
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
+group = GROUP
+version = VERSION_NAME
+
+
+def getPropertyFromLocalProperties(key) {
+    File file = project.rootProject.file('local.properties');
+    if (file.exists()) {
+        Properties properties = new Properties()
+        properties.load(file.newDataInputStream());
+        return properties.getProperty(key)
+    }
+}
+
+def getRepositoryUrl() {
+    return isSnapshot() ? getPropertyFromLocalProperties("SNAPSHOT_REPOSITORY_URL") : getPropertyFromLocalProperties("RELEASE_REPOSITORY_URL")
+}
+
+def isSnapshot() {
+    return version.endsWith("SNAPSHOT");
+}
+
+def hasAndroidPlugin() {
+    return getPlugins().inject(false) { a, b->
+            def classStr = b.getClass().name
+            def isAndroid = ("com.android.build.gradle.LibraryPlugin" == classStr) || ("com.android.build.gradle.AppPlugin" == classStr)
+            a || isAndroid
+        }
+}
+task sourcesJar(type: Jar) {
+    if (hasAndroidPlugin()) {
+        from android.sourceSets.main.java.srcDirs
+        classifier = 'sources'
+    } else {
+        from sourceSets.main.allSource
+        classifier = 'sources'
+    }
+}
+artifacts {
+    archives sourcesJar
+}
+
+uploadArchives {
+    repositories.mavenDeployer {
+        repository(url: repositoryUrl) {
+            authentication(userName: getPropertyFromLocalProperties("USER"), password: getPropertyFromLocalProperties("PASSWORD"))
+        }
+    }
+}
+
+bintray {
+    user = getPropertyFromLocalProperties("bintray.user")
+    key = getPropertyFromLocalProperties("bintray.apikey")
+    configurations = ['archives']
+    pkg {
+        repo = 'maven'
+        name = "${project.group}:${project.name}"
+        userOrg = 'meituan'
+        licenses = ['Apache-2.0']
+        websiteUrl = 'http://tech.meituan.com/android-apk-v2-signature-scheme.html'
+        vcsUrl = 'https://github.com/Meituan-Dianping/walle'
+        publish = true
+    }
+}

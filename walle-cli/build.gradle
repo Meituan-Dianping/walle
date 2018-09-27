@@ -1,0 +1,31 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.4'
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'com.github.johnrengelman.shadow'
+apply from: rootProject.file('quality.gradle')
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'com.meituan.android.walle.Main'
+        attributes 'Walle-Version': VERSION_NAME
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile "com.beust:jcommander:1.48"
+    compile 'commons-io:commons-io:2.5'
+    compile project(':payload_writer')
+    compile 'org.json:json:20080701' //与gradle plugin使用同一版本
+    compile 'com.google.code.gson:gson:2.8.0'
+}
+
+sourceCompatibility = javaVersion
+targetCompatibility = javaVersion

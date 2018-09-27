@@ -1,0 +1,12 @@
+apply plugin: 'java'
+apply from: rootProject.file("mt_maven.gradle")
+apply from: rootProject.file('quality.gradle')
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compileOnly 'org.json:json:20080701'//提供org.json环境，开发时注意与Android org.json api兼容
+    compile project(':payload_reader')
+}
+
+sourceCompatibility = javaVersion
+targetCompatibility = javaVersion

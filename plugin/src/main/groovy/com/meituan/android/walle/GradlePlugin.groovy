@@ -1,11 +1,14 @@
 package com.meituan.android.walle
 
 import com.android.build.gradle.api.BaseVariant
-import com.android.builder.Version
 import com.android.builder.model.SigningConfig
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.ProjectConfigurationException
+
+import java.util.jar.Attributes
+import java.util.jar.JarFile
+import java.util.jar.Manifest
 
 class GradlePlugin implements org.gradle.api.Plugin<Project> {
 
@@ -17,14 +20,43 @@ class GradlePlugin implements org.gradle.api.Plugin<Project> {
             throw new ProjectConfigurationException("Plugin requires the 'com.android.application' plugin to be configured.", null);
         }
 
-        if (versionCompare(Version.getAndroidGradlePluginVersion(), "2.2.0") < 0) {
+        String version = null
+        try {
+            def clazz = Class.forName("com.android.builder.Version")
+            def field  = clazz.getDeclaredField("ANDROID_GRADLE_PLUGIN_VERSION")
+            field.setAccessible(true)
+            version = field.get(null)
+        } catch (ClassNotFoundException ignore) {
+        } catch (NoSuchFieldException ignore) {
+        }
+        if (version == null) {
+            try {
+                def clazz = Class.forName("com.android.builder.model.Version")
+                def field  = clazz.getDeclaredField("ANDROID_GRADLE_PLUGIN_VERSION")
+                field.setAccessible(true)
+                version = field.get(null)
+            } catch (ClassNotFoundException ignore) {
+            } catch (NoSuchFieldException ignore) {
+            }
+        }
+
+        if (version != null && versionCompare(version, "2.2.0") < 0) {
             throw new ProjectConfigurationException("Plugin requires the 'com.android.tools.build:gradle' version 2.2.0 or above to be configured.", null);
         }
+
+//        project.dependencies {
+//            compile 'com.meituan.android.walle:library:' + getVersion()
+//        }
 
         applyExtension(project);
 
         applyTask(project);
     }
+
+    void applyExtension(Project project) {
+        project.extensions.create(sPluginExtensionName, Extension, project);
+    }
+
 
     void applyTask(Project project) {
         project.afterEvaluate {
@@ -35,14 +67,12 @@ class GradlePlugin implements org.gradle.api.Plugin<Project> {
                     throw new ProjectConfigurationException("Plugin requires 'APK Signature Scheme v2 Enabled' for ${variant.name}.", null);
                 }
 
-                ChannelMaker channelMaker = project.tasks.create("assemble${variantName}V2SignatureSchemeChannel", ChannelMaker);
-                def File apkFile = variant.outputs[0].outputFile
-                channelMaker.project = project;
+                ChannelMaker channelMaker = project.tasks.create("assemble${variantName}Channels", ChannelMaker);
+                channelMaker.targetProject = project;
                 channelMaker.variant = variant;
-                channelMaker.apkFile = apkFile;
                 channelMaker.setup();
 
-                variant.assemble.finalizedBy channelMaker;
+                channelMaker.dependsOn variant.assemble;
             }
         }
     }
@@ -53,7 +83,7 @@ class GradlePlugin implements org.gradle.api.Plugin<Project> {
 
     boolean isV2SignatureSchemeEnabled(BaseVariant variant) throws GradleException {
         def signingConfig = getSigningConfig(variant);
-        if (signingConfig == null) {
+        if (signingConfig == null || !signingConfig.isSigningReady()) {
             return false;
         }
 
@@ -101,24 +131,28 @@ class GradlePlugin implements org.gradle.api.Plugin<Project> {
             return Integer.signum(vals1.length - vals2.length);
         }
     }
-
-    void applyExtension(Project project) {
-        project.extensions.create(sPluginExtensionName, Extension);
-    }
-
-    public static class Extension {
-
-        Extension() {
-        }
-
-        public static Extension getConfig(Project project) {
-            Extension config =
-                    project.getExtensions().findByType(Extension.class);
-            if (config == null) {
-                config = new Extension();
+    private static String getVersion() {
+        try {
+            final Enumeration resEnum = Thread.currentThread().getContextClassLoader().getResources(JarFile.MANIFEST_NAME);
+            while (resEnum.hasMoreElements()) {
+                try {
+                    final URL url = (URL) resEnum.nextElement();
+                    final InputStream is = url.openStream();
+                    if (is != null) {
+                        final Manifest manifest = new Manifest(is);
+                        final Attributes mainAttribs = manifest.getMainAttributes();
+                        final String version = mainAttribs.getValue("Walle-Version");
+                        if (version != null) {
+                            return version;
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
-            return config;
+        } catch (IOException e1) {
+            e1.printStackTrace();
         }
-
+        return null;
     }
 }
