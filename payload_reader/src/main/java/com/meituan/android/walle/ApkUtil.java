@@ -27,6 +27,15 @@ final class ApkUtil {
       */
     public static final int APK_SIGNATURE_SCHEME_V2_BLOCK_ID = 0x7109871a;
 
+    /**
+     * The padding in APK SIG BLOCK (V3 scheme introduced)
+     * See https://android.googlesource.com/platform/tools/apksig/+/master/src/main/java/com/android/apksig/internal/apk/ApkSigningBlockUtils.java
+     */
+    public static final int VERITY_PADDING_BLOCK_ID = 0x42726577;
+
+    public static final int ANDROID_COMMON_PAGE_ALIGNMENT_BYTES = 4096;
+
+
     // Our Channel Block ID
     public static final int APK_CHANNEL_BLOCK_ID = 0x71777777;
 

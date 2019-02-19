@@ -174,8 +174,35 @@ public final class PayloadWriter {
                         "No APK Signature Scheme v2 block in APK Signing Block");
             }
 
-
+            final boolean needPadding = originIdValues.remove(ApkUtil.VERITY_PADDING_BLOCK_ID) != null;
             final ApkSigningBlock apkSigningBlock = handler.handle(originIdValues);
+            // replace VERITY_PADDING_BLOCK with new one
+            if (needPadding) {
+                // uint64:  size (excluding this field)
+                // repeated ID-value pairs:
+                //     uint64:           size (excluding this field)
+                //     uint32:           ID
+                //     (size - 4) bytes: value
+                // (extra dummy ID-value for padding to make block size a multiple of 4096 bytes)
+                // uint64:  size (same as the one above)
+                // uint128: magic
+
+                int blocksSize = 0;
+                for (ApkSigningPayload payload : apkSigningBlock.getPayloads()) {
+                    blocksSize += payload.getTotalSize();
+                }
+
+                int resultSize = 8 + blocksSize + 8 + 16; // size(uint64) + pairs size + size(uint64) + magic(uint128)
+                if (resultSize % ApkUtil.ANDROID_COMMON_PAGE_ALIGNMENT_BYTES != 0) {
+                    int padding = ApkUtil.ANDROID_COMMON_PAGE_ALIGNMENT_BYTES - 12 // size(uint64) + id(uint32)
+                            - (resultSize % ApkUtil.ANDROID_COMMON_PAGE_ALIGNMENT_BYTES);
+                    if (padding < 0) {
+                        padding += ApkUtil.ANDROID_COMMON_PAGE_ALIGNMENT_BYTES;
+                    }
+                    final ByteBuffer dummy =  ByteBuffer.allocate(padding).order(ByteOrder.LITTLE_ENDIAN);
+                    apkSigningBlock.addPayload(new ApkSigningPayload(ApkUtil.VERITY_PADDING_BLOCK_ID,dummy));
+                }
+            }
 
             if (apkSigningBlockOffset != 0 && centralDirStartOffset != 0) {
 
