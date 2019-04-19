@@ -23,7 +23,7 @@ class GradlePlugin implements org.gradle.api.Plugin<Project> {
         String version = null
         try {
             def clazz = Class.forName("com.android.builder.Version")
-            def field  = clazz.getDeclaredField("ANDROID_GRADLE_PLUGIN_VERSION")
+            def field = clazz.getDeclaredField("ANDROID_GRADLE_PLUGIN_VERSION")
             field.setAccessible(true)
             version = field.get(null)
         } catch (ClassNotFoundException ignore) {
@@ -32,7 +32,7 @@ class GradlePlugin implements org.gradle.api.Plugin<Project> {
         if (version == null) {
             try {
                 def clazz = Class.forName("com.android.builder.model.Version")
-                def field  = clazz.getDeclaredField("ANDROID_GRADLE_PLUGIN_VERSION")
+                def field = clazz.getDeclaredField("ANDROID_GRADLE_PLUGIN_VERSION")
                 field.setAccessible(true)
                 version = field.get(null)
             } catch (ClassNotFoundException ignore) {
@@ -72,7 +72,11 @@ class GradlePlugin implements org.gradle.api.Plugin<Project> {
                 channelMaker.variant = variant;
                 channelMaker.setup();
 
-                channelMaker.dependsOn variant.assemble;
+                if (variant.hasProperty('assembleProvider')) {
+                    channelMaker.dependsOn variant.assembleProvider.get()
+                } else {
+                    channelMaker.dependsOn variant.assemble
+                }
             }
         }
     }
@@ -131,6 +135,7 @@ class GradlePlugin implements org.gradle.api.Plugin<Project> {
             return Integer.signum(vals1.length - vals2.length);
         }
     }
+
     private static String getVersion() {
         try {
             final Enumeration resEnum = Thread.currentThread().getContextClassLoader().getResources(JarFile.MANIFEST_NAME);
