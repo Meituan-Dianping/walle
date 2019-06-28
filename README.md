@@ -155,7 +155,7 @@ String value = WalleChannelReader.get(context, "buildtime");
 
 ## 原理介绍
 
-对该工具的原理感兴趣的同学，可以移步[美团Android新一代渠道包生成工具](http://tech.meituan.com/android-apk-v2-signature-scheme.html)进行了解。
+对该工具的原理感兴趣的同学，可以移步[美团Android新一代渠道包生成工具](http://tech.meituan.com/2017/01/13/android-apk-v2-signature-scheme.html)进行了解。
 
 ## 注意事项
 
