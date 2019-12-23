@@ -5,6 +5,7 @@ import com.android.apksigner.core.internal.util.ByteBufferDataSource
 import com.android.apksigner.core.util.DataSource
 import com.android.build.FilterData
 import com.android.build.gradle.api.BaseVariant
+import com.android.builder.model.SourceProvider
 import com.google.common.base.Charsets
 import com.google.common.hash.HashCode
 import com.google.common.hash.HashFunction
@@ -14,6 +15,7 @@ import com.google.gson.Gson
 import groovy.text.SimpleTemplateEngine
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
+import org.codehaus.groovy.runtime.ReverseListIterator
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.Project
@@ -157,6 +159,36 @@ class ChannelMaker extends DefaultTask {
                 }
 
                 generateChannelApkByChannelFile(extension.channelFile, apkFile, channelOutputFolder, nameVariantMap)
+            } else if (extension.variantConfigFileName != null && extension.variantConfigFileName.length() > 0) {
+                List<File> locations = new ArrayList<>()
+                locations.add(new File(project.projectDir, "src" + File.separator + variant.name))
+                locations.add(new File(project.projectDir, "src" + File.separator + variant.flavorName))
+                locations.add(new File(project.projectDir, "src" + File.separator + variant.buildType.name))
+                locations.add(new File(project.projectDir, "src" + File.separator + "main"))
+
+
+                boolean isFindConfigFile = false
+                locations.each { file ->
+                    if (isFindConfigFile){
+                        return true
+                    }
+                    if (file.exists()) {
+                        File configFile = new File(file, extension.variantConfigFileName)
+                        if (configFile.exists()) {
+                            generateChannelApkByConfigFile(configFile, apkFile, channelOutputFolder, nameVariantMap)
+                            isFindConfigFile = true
+                            project.logger.error("[Walle] Using config file : " + configFile)
+                        }
+                    }
+                }
+                if (!isFindConfigFile) {
+                    project.logger.error("[Walle] config file does not exist")
+                    project.logger.error("[Walle] please put the file in the follow locations [Descending order of priority]")
+                    locations.each { file ->
+                        project.logger.error("[Walle]   " + file.absolutePath)
+                    }
+
+                }
             }
         }
 
