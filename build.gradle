@@ -3,6 +3,10 @@ buildscript {
     repositories {
         mavenLocal()
         jcenter()
+        maven {
+            url 'https://maven.google.com/'
+            name 'Google'
+        }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.2.0'
@@ -15,6 +19,10 @@ allprojects {
     repositories {
         mavenLocal()
         jcenter()
+        maven {
+            url 'https://maven.google.com/'
+            name 'Google'
+        }
     }
 
     tasks.withType(Javadoc).all {
