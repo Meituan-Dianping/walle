@@ -5,7 +5,6 @@ import com.android.apksigner.core.internal.util.ByteBufferDataSource
 import com.android.apksigner.core.util.DataSource
 import com.android.build.FilterData
 import com.android.build.gradle.api.BaseVariant
-import com.android.builder.model.SourceProvider
 import com.google.common.base.Charsets
 import com.google.common.hash.HashCode
 import com.google.common.hash.HashFunction
@@ -15,7 +14,6 @@ import com.google.gson.Gson
 import groovy.text.SimpleTemplateEngine
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
-import org.codehaus.groovy.runtime.ReverseListIterator
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.Project
