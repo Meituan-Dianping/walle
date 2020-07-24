@@ -22,7 +22,7 @@ Walle（瓦力）：Android Signature V2 Scheme签名下的新一代渠道包打
 ```groovy
 buildscript {
     dependencies {
-        classpath 'com.meituan.android.walle:plugin:1.1.6'
+        classpath 'com.meituan.android.walle:plugin:1.1.7'
     }
 }
 ```
@@ -33,7 +33,7 @@ buildscript {
 apply plugin: 'walle'
 
 dependencies {
-    compile 'com.meituan.android.walle:library:1.1.6'
+    compile 'com.meituan.android.walle:library:1.1.7'
 }
 ```
 
