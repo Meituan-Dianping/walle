@@ -157,6 +157,36 @@ class ChannelMaker extends DefaultTask {
                 }
 
                 generateChannelApkByChannelFile(extension.channelFile, apkFile, channelOutputFolder, nameVariantMap)
+            } else if (extension.variantConfigFileName != null && extension.variantConfigFileName.length() > 0) {
+                List<File> locations = new ArrayList<>()
+                locations.add(new File(project.projectDir, "src" + File.separator + variant.name))
+                locations.add(new File(project.projectDir, "src" + File.separator + variant.flavorName))
+                locations.add(new File(project.projectDir, "src" + File.separator + variant.buildType.name))
+                locations.add(new File(project.projectDir, "src" + File.separator + "main"))
+
+
+                boolean isFindConfigFile = false
+                locations.each { file ->
+                    if (isFindConfigFile){
+                        return true
+                    }
+                    if (file.exists()) {
+                        File configFile = new File(file, extension.variantConfigFileName)
+                        if (configFile.exists()) {
+                            generateChannelApkByConfigFile(configFile, apkFile, channelOutputFolder, nameVariantMap)
+                            isFindConfigFile = true
+                            project.logger.error("[Walle] Using config file : " + configFile)
+                        }
+                    }
+                }
+                if (!isFindConfigFile) {
+                    project.logger.error("[Walle] config file does not exist")
+                    project.logger.error("[Walle] please put the file in the follow locations [Descending order of priority]")
+                    locations.each { file ->
+                        project.logger.error("[Walle]   " + file.absolutePath)
+                    }
+
+                }
             }
         }
 

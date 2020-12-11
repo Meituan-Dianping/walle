@@ -41,6 +41,17 @@ class Extension {
      */
     File configFile;
 
+    /**
+     * <p/>Config file name.
+     * <p/>Will find the file in the following locations:
+     * <p/> /src/{@link com.android.build.gradle.api.BaseVariant#getName() variantName}/
+     * <p/> /src/{@link com.android.build.gradle.api.BaseVariant#getFlavorName() flavor}/
+     * <p/> /src/{@link com.android.builder.model.BuildType#getName() buildType}/
+     * <p/> /src/main/
+     * <p/>
+     */
+    String variantConfigFileName;
+
     Extension(Project project) {
         apkOutputFolder = null;
         apkFileNameFormat = DEFAULT_APK_FILE_NAME_TEMPLATE;
